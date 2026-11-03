@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older: nothing is backed up. The log is the phone's, only. -->
+<full-backup-content>
+    <exclude domain="file" path="." />
+    <exclude domain="sharedpref" path="." />
+    <exclude domain="database" path="." />
+</full-backup-content>

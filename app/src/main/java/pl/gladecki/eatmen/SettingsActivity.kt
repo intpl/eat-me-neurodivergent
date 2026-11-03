@@ -157,7 +157,6 @@ class SettingsActivity : AppCompatActivity() {
     }
 
     private fun notificationPolicyGranted(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return true
         val manager = getSystemService(NotificationManager::class.java)
         return manager.isNotificationPolicyAccessGranted
     }

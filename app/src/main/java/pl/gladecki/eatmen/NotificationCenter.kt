@@ -173,7 +173,6 @@ class NotificationCenter(
         ALERT_PREFIX + state.settings.soundId + if (state.settings.vibration) "_v" else "_q"
 
     private fun doNotDisturbActive(): Boolean {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false
         return try {
             if (!manager.isNotificationPolicyAccessGranted) return false
             manager.currentInterruptionFilter != NotificationManager.INTERRUPTION_FILTER_ALL

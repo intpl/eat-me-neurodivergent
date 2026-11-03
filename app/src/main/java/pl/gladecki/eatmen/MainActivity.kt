@@ -9,11 +9,11 @@ import android.view.View
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import pl.gladecki.eatmen.core.HOUR_MS
 import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.MINUTE_MS
 import pl.gladecki.eatmen.core.Text
 import pl.gladecki.eatmen.databinding.ActivityMainBinding
+import pl.gladecki.eatmen.ui.SheetOptions
 import pl.gladecki.eatmen.ui.showOptionsSheet
 
 /**
@@ -42,6 +42,7 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, SettingsActivity::class.java))
         }
 
+        controller.noteAppOpened()
         askNotificationPermission()
         handleAction(intent)
     }
@@ -88,18 +89,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askWhenLogging() {
-        val offsets = listOf(0L, 30 * MINUTE_MS, HOUR_MS, 2 * HOUR_MS, 3 * HOUR_MS, 4 * HOUR_MS, 5 * HOUR_MS)
-        val labels = listOf(
-            getString(R.string.opt_now),
-            getString(R.string.opt_minutes_ago, 30),
-            getString(R.string.opt_hours_ago, 1),
-            getString(R.string.opt_hours_ago, 2),
-            getString(R.string.opt_hours_ago, 3),
-            getString(R.string.opt_hours_ago, 4),
-            getString(R.string.opt_hours_ago, 5),
-        )
+        val labels = SheetOptions.pastLabels(this)
         showOptionsSheet(getString(R.string.sheet_when), labels) { index ->
-            askWhich(System.currentTimeMillis() - offsets[index])
+            askWhich(System.currentTimeMillis() - SheetOptions.pastMinutes[index] * MINUTE_MS)
         }
     }
 
@@ -115,20 +107,12 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun askWhenPlanning() {
-        val offsets = listOf(30 * MINUTE_MS, HOUR_MS, 2 * HOUR_MS, 3 * HOUR_MS, 4 * HOUR_MS)
-        val labels = listOf(
-            getString(R.string.opt_in_minutes, 30),
-            getString(R.string.opt_in_hours, 1),
-            getString(R.string.opt_in_hours_plural, 2),
-            getString(R.string.opt_in_hours_plural, 3),
-            getString(R.string.opt_in_hours_plural, 4),
-            getString(R.string.opt_tomorrow),
-        )
+        val labels = SheetOptions.aheadLabels(this) + getString(R.string.opt_tomorrow)
         showOptionsSheet(getString(R.string.sheet_when), labels) { index ->
-            if (index == offsets.size) {
+            if (index == SheetOptions.aheadMinutes.size) {
                 controller.tomorrow()
             } else {
-                controller.planAhead(System.currentTimeMillis() + offsets[index])
+                controller.planAhead(System.currentTimeMillis() + SheetOptions.aheadMinutes[index] * MINUTE_MS)
             }
             render()
             warnIfNight()

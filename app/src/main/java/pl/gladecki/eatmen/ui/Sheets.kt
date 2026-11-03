@@ -12,9 +12,9 @@ import pl.gladecki.eatmen.R
 /** Every choice in the app is a short list of words. There is no typing in the flows. */
 fun Activity.showOptionsSheet(title: String, options: List<String>, onPick: (Int) -> Unit) {
     val dialog = BottomSheetDialog(this)
-    val view = layoutInflater.inflate(R.layout.sheet_options, null)
-    view.findViewById<android.widget.TextView>(R.id.sheetTitle).text = title
-    val container = view.findViewById<android.widget.LinearLayout>(R.id.sheetOptions)
+    dialog.setContentView(R.layout.sheet_options)
+    dialog.findViewById<android.widget.TextView>(R.id.sheetTitle)!!.text = title
+    val container = dialog.findViewById<android.widget.LinearLayout>(R.id.sheetOptions)!!
     options.forEachIndexed { index, label ->
         val button = layoutInflater.inflate(R.layout.item_option, container, false) as MaterialButton
         button.text = label
@@ -24,7 +24,6 @@ fun Activity.showOptionsSheet(title: String, options: List<String>, onPick: (Int
         }
         container.addView(button)
     }
-    dialog.setContentView(view)
     dialog.show()
     // The sheet is part of the app, not a Material sample: give it the same
     // warm surface and the rounded top the rest of the screens use.

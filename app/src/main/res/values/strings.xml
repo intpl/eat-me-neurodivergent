@@ -17,11 +17,23 @@
     <string name="sheet_when">When?</string>
     <string name="sheet_which">Which?</string>
     <string name="opt_now">Now</string>
-    <string name="opt_minutes_ago">%1$d min ago</string>
-    <string name="opt_hours_ago">%1$d hours ago</string>
-    <string name="opt_in_minutes">In %1$d minutes</string>
-    <string name="opt_in_hours">In %1$d hour</string>
-    <string name="opt_in_hours_plural">In %1$d hours</string>
+
+    <plurals name="opt_minutes_ago">
+        <item quantity="one">%1$d minute ago</item>
+        <item quantity="other">%1$d minutes ago</item>
+    </plurals>
+    <plurals name="opt_hours_ago">
+        <item quantity="one">%1$d hour ago</item>
+        <item quantity="other">%1$d hours ago</item>
+    </plurals>
+    <plurals name="opt_in_minutes">
+        <item quantity="one">In %1$d minute</item>
+        <item quantity="other">In %1$d minutes</item>
+    </plurals>
+    <plurals name="opt_in_hours">
+        <item quantity="one">In %1$d hour</item>
+        <item quantity="other">In %1$d hours</item>
+    </plurals>
     <string name="opt_tomorrow">Tomorrow</string>
     <string name="opt_meal">Meal</string>
     <string name="opt_snack">Snack</string>
@@ -40,14 +52,10 @@
     <string name="settings_copy_json">Copy JSON</string>
     <string name="settings_erase">Erase everything</string>
     <string name="settings_dnd">Allow in do-not-disturb</string>
-    <string name="settings_gap_dialog">Hours between meals</string>
     <string name="settings_gap_hint">hours</string>
-    <string name="hours_value">%1$s h</string>
 
     <string name="edit_history_title">Last 24 hours</string>
     <string name="edit_history_empty">nothing in the last 24 hours</string>
-    <string name="delete_meal_question">Delete this meal?</string>
-    <string name="erase_question">Delete every meal and setting? This cannot be undone.</string>
     <string name="action_delete">Delete</string>
     <string name="action_erase">Erase</string>
     <string name="action_cancel">Cancel</string>
@@ -72,5 +80,4 @@
     <string name="sound_eat_something">Eat something</string>
     <string name="sound_food_oclock">Food o\'clock</string>
     <string name="sound_it_is_time">It is time</string>
-    <string name="back">Back</string>
 </resources>

@@ -138,6 +138,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="48dp"
                 android:gravity="center_vertical"
+                android:paddingStart="0dp"
                 android:paddingEnd="24dp"
                 android:text="@string/link_edit_history"
                 android:textAppearance="?attr/textAppearanceLabelLarge"

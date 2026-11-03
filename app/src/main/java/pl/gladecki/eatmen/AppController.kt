@@ -110,6 +110,12 @@ class AppController(
 
     // ---- the actions behind the two buttons ------------------------------------
 
+    /** Opening the app is an action like any other, so the log keeps it. */
+    fun noteAppOpened(now: Long = clock.now()) {
+        write(Actions.appOpened(ids, now))
+        reload()
+    }
+
     fun logMeal(eatenAt: Long, kind: Kind, now: Long = clock.now()) {
         reload()
         write(Actions.logMeal(ids, now, state, eatenAt, kind))

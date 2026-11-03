@@ -9,12 +9,12 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
-import pl.gladecki.eatmen.core.HOUR_MS
 import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.Meal
 import pl.gladecki.eatmen.core.MINUTE_MS
 import pl.gladecki.eatmen.core.Text
 import pl.gladecki.eatmen.databinding.ActivityEditHistoryBinding
+import pl.gladecki.eatmen.ui.SheetOptions
 import pl.gladecki.eatmen.ui.showOptionsSheet
 
 /** Meals are editable for 24 hours. Everything older lives in the JSON export. */
@@ -69,18 +69,8 @@ class EditHistoryActivity : AppCompatActivity() {
     }
 
     private fun changeTime(meal: Meal) {
-        val offsets = listOf(0L, 30 * MINUTE_MS, HOUR_MS, 2 * HOUR_MS, 3 * HOUR_MS, 4 * HOUR_MS, 5 * HOUR_MS)
-        val labels = listOf(
-            getString(R.string.opt_now),
-            getString(R.string.opt_minutes_ago, 30),
-            getString(R.string.opt_hours_ago, 1),
-            getString(R.string.opt_hours_ago, 2),
-            getString(R.string.opt_hours_ago, 3),
-            getString(R.string.opt_hours_ago, 4),
-            getString(R.string.opt_hours_ago, 5),
-        )
-        showOptionsSheet(getString(R.string.sheet_when), labels) { index ->
-            controller.editMeal(meal.id, System.currentTimeMillis() - offsets[index], null)
+        showOptionsSheet(getString(R.string.sheet_when), SheetOptions.pastLabels(this)) { index ->
+            controller.editMeal(meal.id, System.currentTimeMillis() - SheetOptions.pastMinutes[index] * MINUTE_MS, null)
             render()
         }
     }
@@ -115,6 +105,8 @@ class EditHistoryActivity : AppCompatActivity() {
         fun submit(meals: List<Meal>, zone: java.time.ZoneId, now: Long) {
             this.meals = meals
             this.lines = meals.map { Text.todayRow(now, it, zone) }
+            // The whole window is one short list; there is nothing finer to tell it.
+            @Suppress("NotifyDataSetChanged")
             notifyDataSetChanged()
         }
 

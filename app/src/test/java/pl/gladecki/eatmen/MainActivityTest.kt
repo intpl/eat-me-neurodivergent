@@ -58,6 +58,12 @@ class MainActivityTest {
     }
 
     @Test
+    fun openingTheAppIsWrittenDown() {
+        launch()
+        assertTrue(controller.exportJson().contains("\"app_opened\""))
+    }
+
+    @Test
     fun threeTapsLogAMealNow() {
         val activity = launch()
         bindingOf(activity).buttonAte.performClick()
