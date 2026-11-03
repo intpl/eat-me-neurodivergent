@@ -37,8 +37,13 @@ The toolchain lives outside the repo (JDK 17, Android SDK 35, Gradle 8.11.1) and
 
     ./env.sh
     gradle :app:assembleDebug          # app/build/outputs/apk/debug/app-debug.apk
+    gradle :app:assembleRelease        # signed, if the key below is in place
     gradle :core:test :app:testDebugUnitTest
     ./verify.sh                        # everything below, in one go
+
+The release build signs with `/home/b/dev/.keys/eat-me-neurodivergent.properties` and the
+keystore beside it, both outside the repo on the host mount. Without that file the release
+build is unsigned and the debug APK is the one to install.
 
 `./verify.sh` runs the unit tests, the Robolectric tests, the build, and the gates:
 
