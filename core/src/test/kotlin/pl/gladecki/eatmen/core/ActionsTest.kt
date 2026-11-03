@@ -27,6 +27,19 @@ class ActionsTest {
     }
 
     @Test
+    fun loggingAnOlderMealDoesNotDragTheReminderBackwards() {
+        val newerMeal = Actions.logMeal(ids, now, State(), now - HOUR_MS, Kind.MEAL)
+        var state = stateAfter(*newerMeal.toTypedArray())
+
+        // A five-hour-old snack implies a reminder that is already past; the
+        // reminder still belongs to the newest meal.
+        val olderSnack = Actions.logMeal(ids, now, state, now - 5 * HOUR_MS, Kind.SNACK)
+        state = stateAfter(*(newerMeal + olderSnack).toTypedArray())
+
+        assertEquals(now - HOUR_MS + 4 * HOUR_MS, Planner.alertAt(state.plan!!))
+    }
+
+    @Test
     fun deletingTheNewestMealMovesTheReminderBack() {
         val base = Actions.logMeal(ids, now, State(), now - 2 * HOUR_MS, Kind.MEAL)
         val state = stateAfter(*base.toTypedArray())

@@ -16,6 +16,7 @@ import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
 import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.Plan
+import pl.gladecki.eatmen.core.Planner
 import pl.gladecki.eatmen.core.Source
 import pl.gladecki.eatmen.databinding.ActivityMainBinding
 
@@ -95,6 +96,29 @@ class MainActivityTest {
     }
 
     @Test
+    fun theChangeLinkChangesTheReminderInOneTap() {
+        val activity = launch()
+        bindingOf(activity).buttonAte.performClick()
+        pickOption(activity, 0)          // Now
+        pickOption(activity, 0)          // Meal
+        val mealPlan = controller.state.plan
+
+        bindingOf(activity).linkChange.performClick()
+        pickOption(activity, 2)          // In 2 hours
+
+        val changed = controller.state.plan
+        assertTrue(changed is Plan.Warning)
+        assertTrue(changed!!.source == Source.EXPLICIT)
+        assertTrue(Planner.alertAt(changed) != Planner.alertAt(mealPlan!!))
+    }
+
+    @Test
+    fun theChangeLinkIsHiddenWithNoReminder() {
+        val activity = launch()
+        assertEquals(android.view.View.GONE, bindingOf(activity).linkChange.visibility)
+    }
+
+    @Test
     fun tomorrowIsOnThePlanningSheet() {
         val activity = launch()
         bindingOf(activity).buttonWillEat.performClick()
@@ -113,6 +137,23 @@ class MainActivityTest {
         val binding = bindingOf(activity)
         assertEquals(android.view.View.VISIBLE, binding.textStale.visibility)
         assertTrue(binding.textStale.text.toString().contains("since your last meal"))
+    }
+
+    @Test
+    fun ateFromTheNotificationOpensTheMealSheetStraightAway() {
+        val intent = android.content.Intent(
+            ApplicationProvider.getApplicationContext(),
+            MainActivity::class.java,
+        ).putExtra(MainActivity.EXTRA_ACTION, MainActivity.ACTION_ATE)
+        val activity = Robolectric.buildActivity(MainActivity::class.java, intent).setup().get()
+
+        val dialog = org.robolectric.shadows.ShadowDialog.getLatestDialog()
+        assertTrue(dialog is com.google.android.material.bottomsheet.BottomSheetDialog)
+        // One pick and the meal is logged at now; nothing was logged before it.
+        assertEquals(0, controller.state.meals.size)
+        pickOption(activity, 0)          // Meal
+        assertEquals(1, controller.state.meals.size)
+        assertEquals(Kind.MEAL, controller.state.meals.single().kind)
     }
 
     @Test

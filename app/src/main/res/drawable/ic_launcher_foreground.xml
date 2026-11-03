@@ -4,15 +4,23 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
+    <!-- A plate with something on it, and a fork beside it. -->
     <path
         android:strokeColor="#F2C6A0"
-        android:strokeWidth="6"
+        android:strokeWidth="5"
         android:fillColor="#00000000"
-        android:pathData="M50,54m-20,0a20,20 0 1,0 40,0a20,20 0 1,0 -40,0" />
+        android:pathData="M45,54m-17,0a17,17 0 1,0 34,0a17,17 0 1,0 -34,0" />
     <path
         android:fillColor="#F2C6A0"
-        android:pathData="M50,50m-4,0a4,4 0 1,0 8,0a4,4 0 1,0 -8,0" />
+        android:pathData="M45,54m-4.5,0a4.5,4.5 0 1,0 9,0a4.5,4.5 0 1,0 -9,0" />
     <path
-        android:fillColor="#F2C6A0"
-        android:pathData="M76,38h2.6v10h-2.6zM80,38h2.6v10h-2.6zM84,38h2.6v10h-2.6zM80,49h2.6v12h-2.6z" />
+        android:strokeColor="#F2C6A0"
+        android:strokeWidth="3.4"
+        android:strokeLineCap="round"
+        android:pathData="M68,40v10M73.5,40v10M79,40v10" />
+    <path
+        android:strokeColor="#F2C6A0"
+        android:strokeWidth="4.4"
+        android:strokeLineCap="round"
+        android:pathData="M73.5,49.5v19" />
 </vector>

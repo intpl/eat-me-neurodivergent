@@ -44,6 +44,19 @@ abstract class ScreenshotBase {
     fun shot(activity: android.app.Activity, name: String) {
         draw(activity.window.decorView, name)
     }
+
+    /** The launcher icon is a drawable, so it can be drawn even without a launcher. */
+    fun icon(name: String) {
+        val drawable = androidx.core.content.ContextCompat.getDrawable(
+            ApplicationProvider.getApplicationContext(),
+            R.mipmap.ic_launcher,
+        )!!
+        val size = 432
+        drawable.setBounds(0, 0, size, size)
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        drawable.draw(Canvas(bitmap))
+        FileOutputStream(File(outDir, "$name.png")).use { bitmap.compress(Bitmap.CompressFormat.PNG, 100, it) }
+    }
 }
 
 @RunWith(RobolectricTestRunner::class)
@@ -87,6 +100,11 @@ class ScreenshotTest : ScreenshotBase() {
     fun theSettingsScreen() {
         seed()
         shot(Robolectric.buildActivity(SettingsActivity::class.java).setup().get(), "settings")
+    }
+
+    @Test
+    fun theLauncherIcon() {
+        icon("icon")
     }
 }
 

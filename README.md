@@ -109,3 +109,6 @@ created.
     core/    pure JVM, no android.*: model, event log, reducer, planner, copy, export
     app/     Android: controller, notification centre, alarms, three activities, sheets
     tools/   the wording gate
+
+`TRACEABILITY.md` maps every behavioural line in the vault note to the code that keeps
+it and the test that proves it.
