@@ -14,10 +14,20 @@ step "assemble"
 gradle -q :app:assembleDebug
 
 APK=app/build/outputs/apk/debug/app-debug.apk
-SDKAPK="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+AAPT="$ANDROID_HOME/build-tools/35.0.0/aapt2"
+WORK=$(mktemp -d)
+trap 'rm -rf "$WORK"' EXIT
+
+# One listing in a file: piping unzip into grep -q makes unzip die of SIGPIPE,
+# and with pipefail that reads as a failure.
+python3 - "$APK" > "$WORK/entries.txt" <<'PY'
+import sys, zipfile
+for name in zipfile.ZipFile(sys.argv[1]).namelist():
+    print(name)
+PY
 
 step "manifest and permissions"
-PERMS=$("$SDKAPK" dump permissions "$APK" | grep -o 'android.permission.[A-Z_]*' | sort -u)
+PERMS=$("$AAPT" dump permissions "$APK" | grep -o 'android.permission.[A-Z_]*' | sort -u)
 echo "$PERMS"
 EXPECTED=$(printf '%s\n' \
   android.permission.ACCESS_NOTIFICATION_POLICY \
@@ -29,14 +39,12 @@ if [ "$PERMS" != "$EXPECTED" ]; then
   echo "permission set is not the promised one" >&2
   exit 1
 fi
-if echo "$PERMS" | grep -q INTERNET; then
-  echo "the app must not have the INTERNET permission" >&2
-  exit 1
-fi
 
-step "no network in the bytecode"
-if unzip -l "$APK" | grep -q 'classes.*\.dex' && strings "$APK" | grep -q 'INTERNET'; then
-  echo "note: the string INTERNET appears inside the APK" >&2
+step "no network"
+strings "$APK" > "$WORK/strings.txt"
+if grep -q 'android.permission.INTERNET' "$WORK/strings.txt"; then
+  echo "the app must not be able to reach the network" >&2
+  exit 1
 fi
 
 step "core stays free of android.*"
@@ -50,7 +58,7 @@ python3 tools/wording.py
 
 step "the sound leaves with the app"
 for clip in eat_something food_oclock it_is_time; do
-  unzip -l "$APK" | grep -q "raw/$clip" || { echo "missing clip $clip" >&2; exit 1; }
+  grep -q "res/raw/$clip" "$WORK/entries.txt" || { echo "missing clip $clip" >&2; exit 1; }
 done
 
 step "ok"
