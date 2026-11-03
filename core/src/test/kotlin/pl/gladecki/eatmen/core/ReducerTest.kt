@@ -132,6 +132,20 @@ class ReducerTest {
     }
 
     @Test
+    fun aLogOfTenThousandEventsStillReplays() {
+        val store = MutableLog()
+        repeat(2_000) { index ->
+            Actions.logMeal(ids, now + index, Reducer.reduce(store.lines), now + index - 30 * MINUTE_MS, Kind.SNACK)
+                .forEach(store::write)
+        }
+        store.write(Event.SettingsChanged("settings", now, Settings.KEY_MEAL_GAP, (5 * HOUR_MS).toString()))
+        val state = Reducer.reduce(store.lines)
+        assertEquals(4_000 + 1, state.eventCount)
+        assertEquals(2_000, state.meals.size)
+        assertEquals(5 * HOUR_MS, state.settings.mealGapMs)
+    }
+
+    @Test
     fun theEventCountCountsWhatIsInTheFile() {
         val store = MutableLog()
         log(store)

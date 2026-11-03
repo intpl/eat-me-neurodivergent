@@ -22,8 +22,11 @@ import java.time.ZoneId
  */
 class NotificationCenter(
     private val context: Context,
-    private val zone: ZoneId,
+    private val zoneOverride: ZoneId? = null,
 ) : Notifications {
+
+    /** Read on every use, so a change of zone shows up without a restart. */
+    private val zone: ZoneId get() = zoneOverride ?: ZoneId.systemDefault()
 
     private val manager: NotificationManager =
         context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager

@@ -45,7 +45,7 @@ class AppControllerTest {
 
     private fun newController() = AppController(
         context = context,
-        zone = athens,
+        pinnedZone = athens,
         clock = clock,
         store = store,
         ids = sequentialIds(),
@@ -207,6 +207,20 @@ class AppControllerTest {
         // Six hours later, at 20:00 UTC = 22:00 Athens, the next alert lands at 02:00.
         controller.logMeal(FakeClock.BASE + 10 * HOUR_MS, Kind.MEAL)
         assertNotNull(controller.nightAlertAt(FakeClock.BASE + 10 * HOUR_MS))
+    }
+
+    @Test
+    fun todayEndsAtLocalMidnightNotAtUtcMidnight() {
+        // BASE is 10:00Z, so 11h50m later is 23:50 in Athens and 12h10m later is
+        // 00:10 the next local day.
+        clock.wall = FakeClock.BASE + 11 * HOUR_MS + 50 * MINUTE_MS
+        controller.logMeal(clock.wall, Kind.MEAL)
+        clock.wall = FakeClock.BASE + 12 * HOUR_MS + 10 * MINUTE_MS
+        controller.logMeal(clock.wall, Kind.SNACK)
+
+        val tonight = controller.todayMeals(clock.wall)
+        assertEquals(1, tonight.size)
+        assertEquals(Kind.SNACK, tonight.single().kind)
     }
 
     @Test

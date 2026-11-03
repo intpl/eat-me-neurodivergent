@@ -29,16 +29,19 @@ import kotlin.math.abs
  */
 class AppController(
     context: Context,
-    val zone: ZoneId = ZoneId.systemDefault(),
+    private val pinnedZone: ZoneId? = null,
     private val clock: Clock = RealClock,
     private val store: EventStore = FileEventStore(File(context.filesDir, "events.ndjson")),
     private val ids: IdSource = RandomIds,
-    private val notifications: Notifications = NotificationCenter(context, zone),
+    private val notifications: Notifications = NotificationCenter(context, pinnedZone),
     private val alarms: Alarms = AlarmScheduler(context),
     private val appVersion: String = BuildConfig.VERSION_NAME,
 ) {
 
     private val prefs = context.getSharedPreferences(PREFS_CLOCK, Context.MODE_PRIVATE)
+
+    /** The phone's zone, read on every use so a flight does not need a restart. */
+    val zone: ZoneId get() = pinnedZone ?: ZoneId.systemDefault()
 
     var state: State = Reducer.reduce(store.readLines())
         private set

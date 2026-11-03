@@ -75,6 +75,9 @@ class SettingsActivity : AppCompatActivity() {
                 startActivity(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
             }
         }
+        if (!exactAlarmsAllowed()) {
+            addRow(list, getString(R.string.settings_exact_alarms), "") { openExactAlarmSettings() }
+        }
         addRow(list, getString(R.string.settings_copy_json), "") { copyJson() }
         addRow(list, getString(R.string.settings_erase), "") { confirmErase() }
     }
@@ -154,6 +157,20 @@ class SettingsActivity : AppCompatActivity() {
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()
+    }
+
+    private fun exactAlarmsAllowed(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+            getSystemService(android.app.AlarmManager::class.java).canScheduleExactAlarms()
+
+    private fun openExactAlarmSettings() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
+        startActivity(
+            Intent(
+                android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
+                android.net.Uri.parse("package:$packageName"),
+            ),
+        )
     }
 
     private fun notificationPolicyGranted(): Boolean {
