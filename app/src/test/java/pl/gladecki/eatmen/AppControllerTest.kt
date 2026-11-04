@@ -210,17 +210,18 @@ class AppControllerTest {
     }
 
     @Test
-    fun todayEndsAtLocalMidnightNotAtUtcMidnight() {
-        // BASE is 10:00Z, so 11h50m later is 23:50 in Athens and 12h10m later is
-        // 00:10 the next local day.
-        clock.wall = FakeClock.BASE + 11 * HOUR_MS + 50 * MINUTE_MS
-        controller.logMeal(clock.wall, Kind.MEAL)
-        clock.wall = FakeClock.BASE + 12 * HOUR_MS + 10 * MINUTE_MS
-        controller.logMeal(clock.wall, Kind.SNACK)
+    fun theBandIsTheLastDayEndingAtTheClock() {
+        // 10:00Z is noon in Athens. A meal four hours back is on the band; one
+        // from yesterday at the same time is exactly on its left edge.
+        clock.wall = FakeClock.BASE
+        controller.logMeal(clock.wall - 4 * HOUR_MS, Kind.MEAL)
+        controller.logMeal(clock.wall - 25 * HOUR_MS, Kind.SNACK)
 
-        val tonight = controller.todayMeals(clock.wall)
-        assertEquals(1, tonight.size)
-        assertEquals(Kind.SNACK, tonight.single().kind)
+        val band = controller.timeline()
+        assertEquals(clock.wall, band.end)
+        assertEquals(clock.wall - 24 * HOUR_MS, band.start)
+        assertEquals(1, band.meals.size)
+        assertEquals(Kind.MEAL, band.meals.single().kind)
     }
 
     @Test

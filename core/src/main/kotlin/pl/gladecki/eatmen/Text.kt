@@ -73,6 +73,13 @@ object Text {
         if (lastMeal == null) "No meal logged yet."
         else "Last meal " + clock(lastMeal.eatenAt, zone) + "."
 
+    /** What the band says out loud, for a screen reader. */
+    fun timelineDescription(timeline: Timeline, zone: ZoneId): String {
+        if (timeline.meals.isEmpty()) return "Last 24 hours: no meals."
+        val listed = timeline.meals.joinToString(", ") { kindWord(it.kind) + " at " + clock(it.eatenAt, zone) }
+        return "Last 24 hours: $listed."
+    }
+
     fun staleLine(now: Long, lastMeal: Meal?): String? {
         if (lastMeal == null) return null
         val age = now - lastMeal.eatenAt

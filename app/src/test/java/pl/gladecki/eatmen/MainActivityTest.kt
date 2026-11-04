@@ -51,7 +51,7 @@ class MainActivityTest {
         val binding = bindingOf(activity)
         assertEquals("nothing logged", binding.textLast.text.toString())
         assertEquals("no reminder", binding.textNext.text.toString())
-        assertEquals(android.view.View.VISIBLE, binding.textEmptyToday.visibility)
+        assertEquals("Last 24 hours: no meals.", binding.timeline.contentDescription.toString())
         assertEquals(android.view.View.GONE, binding.textStale.visibility)
         assertNull(controller.state.plan)
         assertEquals(0, controller.state.meals.size)
@@ -86,7 +86,7 @@ class MainActivityTest {
         val binding = bindingOf(activity)
         assertTrue(binding.textLast.text.toString().contains("snack"))
         assertTrue(binding.textNext.text.toString().contains("·"))
-        assertTrue(binding.listToday.childCount > 0)
+        assertTrue(binding.timeline.contentDescription.toString().contains("snack at "))
     }
 
     @Test

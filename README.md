@@ -4,9 +4,10 @@ A timing-only meal reminder for Android. It never asks what you ate, only when.
 Package `pl.gladecki.eatmen`, minSdk 26 (Android 8.0), targetSdk 35, Kotlin, Gradle,
 plain Views, no Compose, no dependencies beyond AndroidX and Material Components.
 
-This is v2, rebuilt from the project note in the vault
-(`Projects/Eat-Me-Neurodivergent.md`). v1 used a different brief and is archived at
-`/home/b/dev/old/eat-me-neurodivergent-v1`.
+This is v3, built from the project note in the vault
+(`Projects/Eat-Me-Neurodivergent.md`); the change list from v2 is in
+`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`. v1 used a different brief and is
+archived at `/home/b/dev/old/eat-me-neurodivergent-v1`.
 
 ## What it does
 
@@ -26,6 +27,12 @@ The alert carries **Ate** and **Not now**.
 
 **Tomorrow** is a duration, not a clock time: eight silent hours, then one silent
 notification, then the first audible alert one meal gap later.
+
+Under the buttons, one strip draws the last 24 hours: meals as filled dots, snacks as
+small hollow ones, the times printed above them, the night hours shaded, midnight a line
+wherever it falls, and the right edge is now. It replaces the old Today list, so a day
+that crossed midnight is one continuous picture instead of two halves. Nothing on it is
+tappable and nothing is counted.
 
 The front screen says `nothing logged` until the first event. There is no onboarding and
 no nagging an empty screen.
@@ -61,9 +68,9 @@ native graphics and written out as PNGs:
     gradle :app:testDebugUnitTest --tests '*Screenshot*'
     ls app/build/shots
 
-That covers light and dark mode, the front screen with meals, empty and stale, the
-"When?" sheet, edit history and settings. It is a render, not a device: touch targets,
-fonts and the system's own chrome still need a phone.
+That covers light and dark mode, the front screen with meals, a day across midnight,
+empty and stale, the "When?" sheet, edit history and settings. It is a render, not a
+device: touch targets, fonts and the system's own chrome still need a phone.
 
 ## Install
 
@@ -79,7 +86,8 @@ timing; without it the app falls back to inexact alarms and a reminder can arriv
 One append-only file, `files/events.ndjson`, a JSON object per line. The whole app is a
 replay of that file: meals, edits, deletions, reminders, alerts, settings, clock jumps.
 Nothing is ever rewritten in place, and edits and deletions are new events that point at
-an earlier one.
+an earlier one. The band adds no events and no fields: it is drawn from the meals and
+settings the log already holds.
 
 **Copy JSON** in settings puts the entire log on the clipboard as one document
 (`schema`, `exported_at`, `app_version`, `timezone`, `event_count`, `events`). It is the
@@ -111,8 +119,8 @@ created.
 
 ## Layout
 
-    core/    pure JVM, no android.*: model, event log, reducer, planner, copy, export
-    app/     Android: controller, notification centre, alarms, three activities, sheets
+    core/    pure JVM, no android.*: model, event log, reducer, planner, timeline, copy, export
+    app/     Android: controller, notification centre, alarms, activities, sheets, the band
     tools/   the wording gate
 
 `TRACEABILITY.md` maps every behavioural line in the vault note to the code that keeps

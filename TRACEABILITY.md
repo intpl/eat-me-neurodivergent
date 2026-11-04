@@ -22,7 +22,14 @@ named here is executed.
 | A reminder set explicitly warns silently five minutes before | `Reducer.planForSet`, `Planner.WARNING_LEAD_MS` | `AppControllerTest.anExplicitReminderGetsASilentWarningFiveMinutesBefore` |
 | A reminder landing in the night hours warns and offers tomorrow | `Night`, `MainActivity.warnIfNight` | `AppControllerTest.theNightWarningOnlyFiresWhenTheAlertLandsInTheNightHours` |
 | The night window is local clock time, not UTC | `Night.isNight` | `LocalTimeTest.theNightWindowFollowsTheLocalClockAcrossTheSpringForward` |
-| The front shows last, next, today, and links | `MainActivity.render` | `MainActivityTest.theFrontScreenFollowsTheLog` |
+| The front shows last, next, the band, and links | `MainActivity.render` | `MainActivityTest.theFrontScreenFollowsTheLog` |
+| The band is the last 24 hours, ending now | `TimelineBuilder.build` | `TimelineTest.theWindowIsTheLastTwentyFourHoursEndingNow` |
+| The band replaces the Today list | `activity_main.xml`, `TimelineView` | `MainActivityTest.aFreshInstallShowsTheTwoButtonsAndSaysNothingElse` |
+| Meals are filled dots, snacks hollow, times printed | `TimelineView.onDraw`, `TimelineView.drawTimes` | `MainActivityTest.theFrontScreenFollowsTheLog`, `ScreenshotTest.theFrontWithADayOnTheBand` |
+| Night hours are shaded from the setting | `TimelineBuilder.nights` | `TimelineTest.theNightHoursAreClippedToTheWindow`, `TimelineTest.theNightHoursFollowTheSetting` |
+| Midnight is a line inside the band, never its edge | `TimelineBuilder.midnights` | `TimelineTest.midnightIsMarkedInsideTheWindowNotAtItsEdge` |
+| Hour labels follow the phone's clock across a DST change | `TimelineBuilder.hourMarks` | `TimelineTest.springForwardKeepsTheLabelsOnTheClock`, `TimelineTest.fallBackKeepsTheLabelsOnTheClock` |
+| Nothing on the band is a judgement | `Text`, `TimelineView` | `TextTest.noBannedWordEverReachesTheScreen`, `tools/wording.py` |
 | The stale line after eight hours | `Text.staleLine` | `TextTest.theStaleLineAppearsOnlyAfterEightHours` |
 | Meals editable for 24 hours: time, kind, delete | `AppController.editableMeals`, `EditHistoryActivity` | `SettingsAndHistoryTest.deletingFromTheEditHistoryMovesTheCountdown`, `...theEditHistoryShowsOnlyTheLastDay` |
 | Deleting the newest meal moves the reminder back | `Actions.replan` | `ActionsTest.deletingTheNewestOfTwoFallsBackToTheOlder` |
@@ -38,6 +45,7 @@ named here is executed.
 | Everything since install exports as JSON | `Export` | `ExportTest.everyEventInTheExportParsesBackToItself` |
 | The export carries a trace that it happened | `Actions.exportCopied` | `AppControllerTest.theExportCarriesEverythingAndLeavesATrace` |
 
-Two lines in this table are the build's reading of a note that was silent, and both are
-recorded in the vault note's log: the reminder follows the **newest** meal, and the stale
-line is a fixed eight hours rather than a setting.
+Three lines in this table are the build's reading of a note that was silent, and all
+three are recorded in the vault note's log: the reminder follows the **newest** meal, the
+stale line is a fixed eight hours rather than a setting, and the band ends at now, which
+is why the next meal is not on it — the Next line carries that.

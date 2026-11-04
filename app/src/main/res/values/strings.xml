@@ -4,15 +4,14 @@
 
     <string name="label_last">Last</string>
     <string name="label_next">Next</string>
-    <string name="label_today">Today</string>
     <string name="action_ate">I ate</string>
     <string name="action_will_eat">I will eat</string>
     <string name="link_edit_history">edit history</string>
     <string name="link_settings">settings</string>
     <string name="link_change">change</string>
+    <string name="label_timeline">Last 24 hours</string>
     <string name="nothing_logged">nothing logged</string>
     <string name="no_reminder">no reminder</string>
-    <string name="nothing_today">nothing today</string>
 
     <string name="sheet_when">When?</string>
     <string name="sheet_which">Which?</string>

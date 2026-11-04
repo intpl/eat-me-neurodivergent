@@ -83,6 +83,16 @@ class ScreenshotTest : ScreenshotBase() {
     }
 
     @Test
+    fun theFrontWithADayOnTheBand() {
+        val controller = ApplicationProvider.getApplicationContext<EatMeApp>().controller
+        val now = System.currentTimeMillis()
+        controller.logMeal(now - 19 * 3_600_000L, Kind.MEAL)
+        controller.logMeal(now - 13 * 3_600_000L, Kind.SNACK)
+        controller.logMeal(now - 4 * 3_600_000L, Kind.SNACK)
+        shot(Robolectric.buildActivity(MainActivity::class.java).setup().get(), "front-band")
+    }
+
+    @Test
     fun theWhenSheet() {
         val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
         activity.findViewById<View>(R.id.buttonAte).performClick()

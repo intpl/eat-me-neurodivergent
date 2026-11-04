@@ -18,6 +18,8 @@ import pl.gladecki.eatmen.core.Reducer
 import pl.gladecki.eatmen.core.Settings
 import pl.gladecki.eatmen.core.State
 import pl.gladecki.eatmen.core.Step
+import pl.gladecki.eatmen.core.Timeline
+import pl.gladecki.eatmen.core.TimelineBuilder
 import java.io.File
 import java.time.Instant
 import java.time.ZoneId
@@ -50,12 +52,9 @@ class AppController(
 
     fun lastMeal(): Meal? = state.lastMeal()
 
-    fun todayMeals(now: Long = clock.now()): List<Meal> {
-        val today = Instant.ofEpochMilli(now).atZone(zone).toLocalDate()
-        return state.liveMeals()
-            .filter { Instant.ofEpochMilli(it.eatenAt).atZone(zone).toLocalDate() == today }
-            .sortedByDescending { it.eatenAt }
-    }
+    /** The last 24 hours, as the band on the front screen draws them. */
+    fun timeline(now: Long = clock.now()): Timeline =
+        TimelineBuilder.build(now, state.liveMeals(), state.settings, zone)
 
     /** Meals from the last 24 hours, newest first. The only history there is. */
     fun editableMeals(now: Long = clock.now()): List<Meal> =

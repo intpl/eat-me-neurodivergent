@@ -6,7 +6,6 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import pl.gladecki.eatmen.core.Kind
@@ -78,14 +77,7 @@ class MainActivity : AppCompatActivity() {
         binding.textStale.text = stale ?: ""
         binding.textStale.visibility = if (stale == null) View.GONE else View.VISIBLE
 
-        val today = controller.todayMeals(now)
-        binding.listToday.removeAllViews()
-        today.forEach { meal ->
-            val row = layoutInflater.inflate(R.layout.row_meal, binding.listToday, false) as TextView
-            row.text = Text.todayRow(now, meal, zone)
-            binding.listToday.addView(row)
-        }
-        binding.textEmptyToday.visibility = if (today.isEmpty()) View.VISIBLE else View.GONE
+        binding.timeline.show(controller.timeline(now), zone)
     }
 
     private fun askWhenLogging() {
