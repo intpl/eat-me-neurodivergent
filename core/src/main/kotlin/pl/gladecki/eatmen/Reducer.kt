@@ -55,15 +55,12 @@ object Reducer {
         return next.copy(eventCount = state.eventCount + 1, lastEventAt = event.at)
     }
 
-    private fun planForSet(event: Event.ReminderSet): Plan {
-        val due = maxOf(event.dueAt, event.at)
-        if (event.source != Source.EXPLICIT) return Plan.Due(due, event.source)
-        val warnAt = due - Planner.WARNING_LEAD_MS
-        return if (warnAt > event.at) Plan.Warning(warnAt, due) else Plan.Due(due, event.source)
-    }
+    private fun planForSet(event: Event.ReminderSet): Plan =
+        Plan.Due(maxOf(event.dueAt, event.at), event.source)
 
     private fun planAfterAlert(plan: Plan?, event: Event.AlertFired, settings: Settings): Plan? = when (event.kind) {
-        AlertKind.WARNING -> if (plan is Plan.Warning) Plan.Due(plan.dueAt, Source.EXPLICIT) else plan
+        // Logs written before 3.1.0 can carry this; nothing writes it now and it changes nothing.
+        AlertKind.WARNING -> plan
         AlertKind.DUE -> plan?.let { Plan.Repeating(event.at + settings.notNowMs, it.source) }
         AlertKind.REPEAT -> plan?.let { Plan.Repeating(event.at + settings.notNowMs, it.source) }
         AlertKind.SILENT -> if (plan is Plan.TomorrowSilent) Plan.TomorrowDue(plan.normalAt) else plan

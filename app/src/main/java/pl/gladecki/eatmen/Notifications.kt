@@ -8,10 +8,15 @@ interface Notifications {
     fun ensureChannels(state: State) {}
 
     fun showCountdown(at: Long, now: Long)
-    fun showWarning(dueAt: Long)
     fun showAlert(state: State, now: Long, audible: Boolean)
     fun showSilentStep(state: State, now: Long)
     fun cancel()
+
+    /** Whether this app is allowed to notify at all. A screen that cannot speak has to say so. */
+    fun canNotify(): Boolean = true
+
+    /** Posts a reminder-shaped notification now, on the channel a real one would use. */
+    fun test(state: State, now: Long) {}
 }
 
 interface Alarms {

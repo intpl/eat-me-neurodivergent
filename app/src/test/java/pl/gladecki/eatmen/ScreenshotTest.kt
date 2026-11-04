@@ -10,7 +10,10 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import org.robolectric.annotation.GraphicsMode
+import org.robolectric.shadows.ShadowAlarmManager
 import org.robolectric.shadows.ShadowDialog
+import android.app.NotificationManager
+import org.robolectric.Shadows.shadowOf
 import pl.gladecki.eatmen.core.Kind
 import java.io.File
 import java.io.FileOutputStream
@@ -22,6 +25,16 @@ import java.io.FileOutputStream
 abstract class ScreenshotBase {
 
     val outDir = File("build/shots").apply { mkdirs() }
+
+    /** The healthy phone: exact reminders allowed, notifications on. */
+    @org.junit.Before
+    fun defaultPhone() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        shadowOf(
+            ApplicationProvider.getApplicationContext<android.app.Application>()
+                .getSystemService(NotificationManager::class.java),
+        ).setNotificationsEnabled(true)
+    }
 
     fun seed() {
         val controller = ApplicationProvider.getApplicationContext<EatMeApp>().controller
@@ -90,6 +103,17 @@ class ScreenshotTest : ScreenshotBase() {
         controller.logMeal(now - 13 * 3_600_000L, Kind.SNACK)
         controller.logMeal(now - 4 * 3_600_000L, Kind.SNACK)
         shot(Robolectric.buildActivity(MainActivity::class.java).setup().get(), "front-band")
+    }
+
+    @Test
+    fun theFrontWhenThePhoneBlocksReminders() {
+        shadowOf(
+            ApplicationProvider.getApplicationContext<android.app.Application>()
+                .getSystemService(NotificationManager::class.java),
+        ).setNotificationsEnabled(false)
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        seed()
+        shot(Robolectric.buildActivity(MainActivity::class.java).setup().get(), "front-blocked")
     }
 
     @Test

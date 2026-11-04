@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -70,6 +71,9 @@ class SettingsActivity : AppCompatActivity() {
             controller.changeSetting(Settings.KEY_VIBRATION, checked.toString())
             render()
         }
+        if (!controller.notificationsEnabled()) {
+            addRow(list, getString(R.string.settings_notifications), "") { openNotificationSettings() }
+        }
         if (!notificationPolicyGranted()) {
             addRow(list, getString(R.string.settings_dnd), "") {
                 startActivity(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
@@ -78,6 +82,10 @@ class SettingsActivity : AppCompatActivity() {
         if (!exactAlarmsAllowed()) {
             addRow(list, getString(R.string.settings_exact_alarms), "") { openExactAlarmSettings() }
         }
+        if (!batteryUnrestricted()) {
+            addRow(list, getString(R.string.settings_battery), "") { openBatterySettings() }
+        }
+        addRow(list, getString(R.string.settings_test), "") { sendTestNotification() }
         addRow(list, getString(R.string.settings_copy_json), "") { copyJson() }
         addRow(list, getString(R.string.settings_erase), "") { confirmErase() }
     }
@@ -162,6 +170,36 @@ class SettingsActivity : AppCompatActivity() {
     private fun exactAlarmsAllowed(): Boolean =
         Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
             getSystemService(android.app.AlarmManager::class.java).canScheduleExactAlarms()
+
+    private fun openNotificationSettings() {
+        startActivity(
+            Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
+                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName),
+        )
+    }
+
+    /** The phone's own battery page: no permission is needed to open it, only to ask for the exemption. */
+    private fun batteryUnrestricted(): Boolean = try {
+        getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
+    } catch (e: Exception) {
+        true
+    }
+
+    private fun openBatterySettings() {
+        startActivity(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
+    }
+
+    /**
+     * The two-second proof that the permission, the channel and the sound all work.
+     * Without it the only way to find out is to wait for a meal.
+     */
+    private fun sendTestNotification() {
+        if (!controller.notificationsEnabled()) {
+            Toast.makeText(this, R.string.problem_notifications, Toast.LENGTH_LONG).show()
+            return
+        }
+        controller.sendTestNotification()
+    }
 
     private fun openExactAlarmSettings() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return

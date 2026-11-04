@@ -50,8 +50,11 @@
     <string name="settings_vibration">Vibration</string>
     <string name="settings_copy_json">Copy JSON</string>
     <string name="settings_erase">Erase everything</string>
+    <string name="settings_notifications">Allow notifications</string>
     <string name="settings_dnd">Allow in do-not-disturb</string>
     <string name="settings_exact_alarms">Allow exact reminders</string>
+    <string name="settings_battery">Allow unrestricted battery use</string>
+    <string name="settings_test">Send a test notification</string>
     <string name="settings_gap_hint">hours</string>
 
     <string name="edit_history_title">Last 24 hours</string>
@@ -73,9 +76,14 @@
     <string name="channel_silent">Silent reminder</string>
     <string name="channel_silent_description">The reminder without sound</string>
     <string name="countdown_title">Next meal in</string>
-    <string name="warning_title">Next meal</string>
     <string name="action_not_now">Not now</string>
     <string name="notification_ate">Ate</string>
+    <string name="test_title">Test reminder.</string>
+    <string name="test_body">This is what a reminder will look like.</string>
+
+    <string name="problem_notifications">notifications are off for this app</string>
+    <string name="problem_exact_alarms">exact reminders are off, times can drift</string>
+    <string name="problem_suffix">settings</string>
 
     <string name="sound_eat_something">Eat something</string>
     <string name="sound_food_oclock">Food o\'clock</string>

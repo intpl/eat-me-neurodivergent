@@ -65,8 +65,6 @@ object Text {
         if (lastMeal == null) "No meal logged yet."
         else "It's been " + short(now - lastMeal.eatenAt) + "."
 
-    fun warningText(dueAt: Long, zone: ZoneId): String = clock(dueAt, zone) + " in 5 minutes"
-
     fun tomorrowSilentTitle(now: Long, zone: ZoneId): String = "It's " + clock(now, zone) + "."
 
     fun tomorrowSilentBody(lastMeal: Meal?, zone: ZoneId): String =

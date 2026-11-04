@@ -13,8 +13,8 @@ data class Meal(val id: String, val eatenAt: Long, val kind: Kind) {
 /** Where the next reminder came from. */
 enum class Source { EXPLICIT, SUGGESTED, TOMORROW }
 
-/** One step of the notification ladder. */
-enum class Step { WARNING, DUE, REPEAT, TOMORROW_SILENT, TOMORROW_DUE }
+/** One step of the notification ladder. There is no step before a reminder: it speaks when it is due. */
+enum class Step { DUE, REPEAT, TOMORROW_SILENT, TOMORROW_DUE }
 
 /**
  * The one pending thing the app will do, as a value.
@@ -26,12 +26,6 @@ enum class Step { WARNING, DUE, REPEAT, TOMORROW_SILENT, TOMORROW_DUE }
 sealed interface Plan {
     val at: Long
     val source: Source
-
-    /** Explicit reminders get a silent five minutes before. */
-    data class Warning(val warnAt: Long, val dueAt: Long) : Plan {
-        override val at: Long get() = warnAt
-        override val source: Source get() = Source.EXPLICIT
-    }
 
     /** The first alert of a run. The only step that makes a sound. */
     data class Due(override val at: Long, override val source: Source) : Plan

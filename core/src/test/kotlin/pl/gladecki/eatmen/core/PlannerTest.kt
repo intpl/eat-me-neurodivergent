@@ -35,11 +35,11 @@ class PlannerTest {
     }
 
     @Test
-    fun theAlertInstantIsTheMealTimeNotTheWarning() {
-        val warning = Plan.Warning(now + 55 * MINUTE_MS, now + 60 * MINUTE_MS)
-        assertEquals(now + 60 * MINUTE_MS, Planner.alertAt(warning))
+    fun theAlertInstantIsTheTimeTheReminderWasSetFor() {
         val due = Plan.Due(now + 60 * MINUTE_MS, Source.SUGGESTED)
         assertEquals(now + 60 * MINUTE_MS, Planner.alertAt(due))
+        val explicit = Plan.Due(now + 30 * MINUTE_MS, Source.EXPLICIT)
+        assertEquals(now + 30 * MINUTE_MS, Planner.alertAt(explicit))
     }
 
     @Test
@@ -54,10 +54,10 @@ class PlannerTest {
     }
 
     @Test
-    fun theWarningStepIsDueAtItsOwnInstant() {
-        val plan = Plan.Warning(now + 5 * MINUTE_MS, now + 10 * MINUTE_MS)
+    fun nothingIsDueBeforeTheRemindersOwnInstant() {
+        val plan = Plan.Due(now + 10 * MINUTE_MS, Source.EXPLICIT)
         assertNull(Planner.overdueStep(plan, now))
-        assertEquals(Step.WARNING, Planner.overdueStep(plan, now + 5 * MINUTE_MS))
+        assertNull(Planner.overdueStep(plan, now + 9 * MINUTE_MS))
         assertEquals(Step.DUE, Planner.overdueStep(plan, now + 10 * MINUTE_MS))
     }
 
@@ -66,7 +66,6 @@ class PlannerTest {
         assertTrue(Planner.isAudible(Step.DUE))
         assertTrue(Planner.isAudible(Step.TOMORROW_DUE))
         assertTrue(!Planner.isAudible(Step.REPEAT))
-        assertTrue(!Planner.isAudible(Step.WARNING))
         assertTrue(!Planner.isAudible(Step.TOMORROW_SILENT))
     }
 

@@ -1,8 +1,10 @@
 package pl.gladecki.eatmen
 
 import android.app.AlertDialog
+import android.app.NotificationManager
 import android.content.Context
 import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
@@ -14,6 +16,7 @@ import org.robolectric.Robolectric
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.annotation.Config
+import org.robolectric.shadows.ShadowAlarmManager
 import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.Plan
 import pl.gladecki.eatmen.core.Planner
@@ -57,6 +60,36 @@ class MainActivityTest {
         assertEquals(0, controller.state.meals.size)
     }
 
+    private fun problemLines(binding: ActivityMainBinding): List<String> =
+        (0 until binding.listProblems.childCount).map { index ->
+            binding.listProblems.getChildAt(index)
+                .findViewById<TextView>(R.id.problemText).text.toString()
+        }
+
+    @Test
+    fun theFrontSaysWhenNotificationsAreOff() {
+        shadowOf(context.getSystemService(NotificationManager::class.java)).setNotificationsEnabled(false)
+        val lines = problemLines(bindingOf(launch()))
+        assertTrue(lines.any { it.startsWith("notifications are off") })
+    }
+
+    @Test
+    fun theFrontSaysWhenExactRemindersAreWithheld() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        try {
+            val lines = problemLines(bindingOf(launch()))
+            assertTrue(lines.any { it.startsWith("exact reminders are off") })
+        } finally {
+            ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        }
+    }
+
+    @Test
+    fun theFrontSaysNothingWhenNothingIsWithheld() {
+        ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        assertEquals(0, bindingOf(launch()).listProblems.childCount)
+    }
+
     @Test
     fun openingTheAppIsWrittenDown() {
         launch()
@@ -97,7 +130,7 @@ class MainActivityTest {
 
         assertEquals(0, controller.state.meals.size)
         val plan = controller.state.plan!!
-        assertTrue(plan is Plan.Warning)
+        assertTrue(plan is Plan.Due)
         assertTrue(plan.source == Source.EXPLICIT)
     }
 
@@ -113,7 +146,7 @@ class MainActivityTest {
         pickOption(activity, 2)          // In 2 hours
 
         val changed = controller.state.plan
-        assertTrue(changed is Plan.Warning)
+        assertTrue(changed is Plan.Due)
         assertTrue(changed!!.source == Source.EXPLICIT)
         assertTrue(Planner.alertAt(changed) != Planner.alertAt(mealPlan!!))
     }

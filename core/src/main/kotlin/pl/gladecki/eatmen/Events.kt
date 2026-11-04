@@ -176,6 +176,10 @@ sealed class Event {
     }
 }
 
+/**
+ * [WARNING] is only ever read: 2.x and 3.0 logs contain it, and a log has to
+ * replay exactly as it was written. Nothing emits it since 3.1.0.
+ */
 enum class AlertKind { WARNING, DUE, REPEAT, SILENT }
 
 object EventCodec {

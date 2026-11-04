@@ -35,14 +35,16 @@ class ReducerTest {
     }
 
     @Test
-    fun anExplicitReminderGetsAWarningFiveMinutesBefore() {
+    fun anExplicitReminderIsDueAtItsOwnTimeAndNotBefore() {
         val store = MutableLog()
         Actions.planAhead(ids, now, now + HOUR_MS).forEach(store::write)
-        assertEquals(Plan.Warning(now + 55 * MINUTE_MS, now + HOUR_MS, ), Reducer.reduce(store.lines).plan)
+        val plan = Reducer.reduce(store.lines).plan
+        assertEquals(Plan.Due(now + HOUR_MS, Source.EXPLICIT), plan)
+        assertNull(Reducer.reduce(store.lines).plan?.let { Planner.overdueStep(it, now + 55 * MINUTE_MS) })
     }
 
     @Test
-    fun theWarningHandsOverToTheDueAlert() {
+    fun aWarningFromAnOlderLogReplaysWithoutChangingAnything() {
         val store = MutableLog()
         Actions.planAhead(ids, now, now + HOUR_MS).forEach(store::write)
         Actions.fire(ids, now + 55 * MINUTE_MS, AlertKind.WARNING).forEach(store::write)

@@ -1,5 +1,6 @@
 package pl.gladecki.eatmen
 
+import android.app.NotificationManager
 import android.content.Context
 import android.widget.EditText
 import android.widget.LinearLayout
@@ -52,8 +53,38 @@ class SettingsAndHistoryTest {
         assertTrue(rows.contains("Night hours" to "23:00–07:00"))
         assertTrue(rows.contains("Sound" to "Eat something"))
         assertTrue(rows.any { it.first == "Vibration" })
+        assertTrue(rows.any { it.first == "Send a test notification" })
         assertTrue(rows.any { it.first == "Copy JSON" })
         assertTrue(rows.any { it.first == "Erase everything" })
+    }
+
+    private fun settingsRows(activity: android.app.Activity): List<Pair<String, android.view.View>> {
+        val binding = ActivitySettingsBinding.bind(root(activity))
+        return (0 until binding.settingsList.childCount).map { index ->
+            val row = binding.settingsList.getChildAt(index)
+            val title = row.findViewById<TextView>(R.id.settingTitle).text.toString()
+            title to row
+        }
+    }
+
+    @Test
+    fun theSettingsScreenOffersTheNotificationSwitchesWhenTheyAreOff() {
+        val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
+        val rows = settingsRows(activity).map { it.first }
+        assertTrue(rows.contains("Allow notifications") || rows.contains("Allow exact reminders"))
+    }
+
+    @Test
+    fun theTestRowSaysSoWhenTheAppCannotNotify() {
+        org.robolectric.Shadows.shadowOf(context.getSystemService(NotificationManager::class.java))
+            .setNotificationsEnabled(false)
+        val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
+        val row = settingsRows(activity).first { it.first == "Send a test notification" }.second
+        row.performClick()
+        assertEquals(
+            "notifications are off for this app",
+            org.robolectric.shadows.ShadowToast.getTextOfLatestToast(),
+        )
     }
 
     @Test

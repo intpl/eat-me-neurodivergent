@@ -17,8 +17,8 @@ import java.time.ZoneId
 
 /**
  * One notification id for the app's whole life. The same notification is the
- * countdown, the warning, the alert and the silent repeat; only its channel and
- * its words change.
+ * countdown, the alert and the silent repeat; only its channel and its words
+ * change.
  */
 class NotificationCenter(
     private val context: Context,
@@ -78,16 +78,6 @@ class NotificationCenter(
         notify(builder)
     }
 
-    override fun showWarning(dueAt: Long) {
-        val builder = base(CH_SILENT)
-            .setContentTitle(context.getString(R.string.warning_title))
-            .setContentText(Text.warningText(dueAt, zone))
-            .setOngoing(true)
-            .setOnlyAlertOnce(true)
-            .setShowWhen(false)
-        notify(builder)
-    }
-
     override fun showAlert(state: State, now: Long, audible: Boolean) {
         val channel = if (!audible || doNotDisturbActive()) CH_SILENT else alertChannelId(state)
         val builder = base(channel)
@@ -113,6 +103,24 @@ class NotificationCenter(
 
     override fun cancel() {
         NotificationManagerCompat.from(context).cancel(NOTIFICATION_ID)
+    }
+
+    override fun canNotify(): Boolean =
+        NotificationManagerCompat.from(context).areNotificationsEnabled()
+
+    override fun test(state: State, now: Long) {
+        val channel = if (doNotDisturbActive()) CH_SILENT else alertChannelId(state)
+        val builder = base(channel)
+            .setContentTitle(context.getString(R.string.test_title))
+            .setContentText(context.getString(R.string.test_body))
+            .setWhen(now)
+            .setShowWhen(false)
+            .setAutoCancel(true)
+        try {
+            NotificationManagerCompat.from(context).notify(TEST_NOTIFICATION_ID, builder.build())
+        } catch (e: SecurityException) {
+            // Not allowed to notify; the settings screen says so.
+        }
     }
 
     private fun base(channel: String): NotificationCompat.Builder =
@@ -186,6 +194,7 @@ class NotificationCenter(
 
     companion object {
         const val NOTIFICATION_ID = 1
+        const val TEST_NOTIFICATION_ID = 2
         const val CH_COUNTDOWN = "countdown"
         const val CH_SILENT = "alert_silent"
         const val ALERT_PREFIX = "alert_sound_"

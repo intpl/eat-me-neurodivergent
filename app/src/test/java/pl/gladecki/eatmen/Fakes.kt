@@ -22,14 +22,15 @@ class FakeClock(var wall: Long = BASE, var elapsedMs: Long = 1_000) : Clock {
 class RecordingNotifications : Notifications {
     sealed interface Call {
         data class Countdown(val at: Long) : Call
-        data class Warning(val dueAt: Long) : Call
         data class Alert(val now: Long, val audible: Boolean) : Call
         data class SilentStep(val now: Long) : Call
+        data class Test(val now: Long) : Call
         data object Cancel : Call
     }
 
     val calls = ArrayList<Call>()
     var channelsEnsured = 0
+    var allowed = true
 
     override fun ensureChannels(state: State) {
         channelsEnsured++
@@ -37,10 +38,6 @@ class RecordingNotifications : Notifications {
 
     override fun showCountdown(at: Long, now: Long) {
         calls.add(Call.Countdown(at))
-    }
-
-    override fun showWarning(dueAt: Long) {
-        calls.add(Call.Warning(dueAt))
     }
 
     override fun showAlert(state: State, now: Long, audible: Boolean) {
@@ -53,6 +50,12 @@ class RecordingNotifications : Notifications {
 
     override fun cancel() {
         calls.add(Call.Cancel)
+    }
+
+    override fun canNotify(): Boolean = allowed
+
+    override fun test(state: State, now: Long) {
+        calls.add(Call.Test(now))
     }
 
     fun last(): Call? = calls.lastOrNull()

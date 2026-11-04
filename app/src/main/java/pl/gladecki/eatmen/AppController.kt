@@ -64,6 +64,16 @@ class AppController(
 
     fun settings(): Settings = state.settings
 
+    /** Whether the phone lets this app post anything at all. */
+    fun notificationsEnabled(): Boolean = notifications.canNotify()
+
+    /** The settings screen's proof that the permission, the channel and the sound all work. */
+    fun sendTestNotification(now: Long = clock.now()) {
+        reload()
+        notifications.ensureChannels(state)
+        notifications.test(state, now)
+    }
+
     /** The alert instant, when it falls inside the night hours. */
     fun nightAlertAt(now: Long = clock.now()): Long? {
         val plan = state.plan ?: return null
@@ -88,7 +98,6 @@ class AppController(
             when (step) {
                 Step.DUE, Step.TOMORROW_DUE -> notifications.showAlert(state, now, audible = true)
                 Step.REPEAT -> notifications.showAlert(state, now, audible = false)
-                Step.WARNING -> notifications.showWarning((plan as Plan.Warning).dueAt)
                 Step.TOMORROW_SILENT -> notifications.showSilentStep(state, now)
             }
         } else {
@@ -179,9 +188,6 @@ class AppController(
     private fun render(now: Long) {
         when (val plan = state.plan) {
             null -> notifications.cancel()
-            is Plan.Warning ->
-                if (now < plan.warnAt) notifications.showCountdown(plan.dueAt, now)
-                else notifications.showWarning(plan.dueAt)
             is Plan.Due ->
                 if (now < plan.at) notifications.showCountdown(plan.at, now)
                 else notifications.showAlert(state, now, audible = false)

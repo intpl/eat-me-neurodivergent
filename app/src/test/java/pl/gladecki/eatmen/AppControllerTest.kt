@@ -3,6 +3,7 @@ package pl.gladecki.eatmen
 import android.content.Context
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
@@ -124,20 +125,34 @@ class AppControllerTest {
     }
 
     @Test
-    fun anExplicitReminderGetsASilentWarningFiveMinutesBefore() {
+    fun anExplicitReminderSpeaksAtItsOwnTimeAndNotBefore() {
         val at = FakeClock.BASE + HOUR_MS
         controller.planAhead(at)
         assertEquals(RecordingNotifications.Call.Countdown(at), notifications.last())
-        assertEquals(at - 5 * MINUTE_MS, alarms.armedAt)
+        assertEquals(at, alarms.armedAt)
 
         clock.advance(HOUR_MS - 5 * MINUTE_MS)
-        controller.onAlarm()
-        assertEquals(RecordingNotifications.Call.Warning(at), notifications.last())
+        controller.refresh()
+        assertEquals(RecordingNotifications.Call.Countdown(at), notifications.last())
         assertEquals(at, alarms.armedAt)
 
         clock.advance(5 * MINUTE_MS)
         controller.onAlarm()
         assertEquals(RecordingNotifications.Call.Alert(clock.wall, true), notifications.last())
+    }
+
+    @Test
+    fun theScreenCanTellWhetherThePhoneWillLetItNotify() {
+        assertTrue(controller.notificationsEnabled())
+        notifications.allowed = false
+        assertFalse(controller.notificationsEnabled())
+    }
+
+    @Test
+    fun theTestNotificationGoesThroughTheChannelTheReminderWould() {
+        controller.sendTestNotification()
+        assertEquals(RecordingNotifications.Call.Test(clock.wall), notifications.last())
+        assertTrue(notifications.channelsEnsured > 0)
     }
 
     @Test

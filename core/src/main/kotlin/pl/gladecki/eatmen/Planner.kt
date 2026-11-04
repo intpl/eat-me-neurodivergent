@@ -3,9 +3,6 @@ package pl.gladecki.eatmen.core
 /** All the arithmetic of when the app will speak. No android.* here, so it is tested on the JVM. */
 object Planner {
 
-    /** Explicit reminders get a silent heads-up this long before. */
-    const val WARNING_LEAD_MS: Long = 5 * MINUTE_MS
-
     /**
      * A reminder computed from a meal that is already past starts a minute out
      * instead of firing under the finger that just logged the meal.
@@ -20,9 +17,8 @@ object Planner {
         return silenceUntil to (silenceUntil + settings.mealGapMs)
     }
 
-    /** The instant the app actually alerts, as opposed to the silent warning before it. */
+    /** The instant the app speaks. */
     fun alertAt(plan: Plan): Long = when (plan) {
-        is Plan.Warning -> plan.dueAt
         is Plan.Due -> plan.at
         is Plan.Repeating -> plan.at
         is Plan.TomorrowSilent -> plan.normalAt
@@ -31,11 +27,6 @@ object Planner {
 
     /** The step that is already due at [now], if any. Used when the app opens or boots late. */
     fun overdueStep(plan: Plan, now: Long): Step? = when (plan) {
-        is Plan.Warning -> when {
-            now >= plan.dueAt -> Step.DUE
-            now >= plan.warnAt -> Step.WARNING
-            else -> null
-        }
         is Plan.Due -> if (now >= plan.at) Step.DUE else null
         is Plan.Repeating -> if (now >= plan.at) Step.REPEAT else null
         is Plan.TomorrowSilent ->
@@ -46,7 +37,6 @@ object Planner {
     }
 
     fun alertKindOf(step: Step): AlertKind? = when (step) {
-        Step.WARNING -> AlertKind.WARNING
         Step.DUE -> AlertKind.DUE
         Step.REPEAT -> AlertKind.REPEAT
         Step.TOMORROW_SILENT -> AlertKind.SILENT

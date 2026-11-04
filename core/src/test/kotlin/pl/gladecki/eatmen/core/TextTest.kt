@@ -80,7 +80,6 @@ class TextTest {
             Text.nextLine(now, Plan.TomorrowSilent(now + HOUR_MS, now + 5 * HOUR_MS), athens),
             Text.alertTitle(now, athens),
             Text.alertBody(now, Meal("m", now - 3 * HOUR_MS, Kind.SNACK)),
-            Text.warningText(now + 5 * MINUTE_MS, athens),
             Text.tomorrowSilentTitle(now, athens),
             Text.tomorrowSilentBody(Meal("m", now - 4 * HOUR_MS, Kind.MEAL), athens),
             Text.staleLine(now, Meal("m", now - 9 * HOUR_MS, Kind.MEAL))!!,

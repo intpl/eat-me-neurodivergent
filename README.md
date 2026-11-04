@@ -4,10 +4,10 @@ A timing-only meal reminder for Android. It never asks what you ate, only when.
 Package `pl.gladecki.eatmen`, minSdk 26 (Android 8.0), targetSdk 35, Kotlin, Gradle,
 plain Views, no Compose, no dependencies beyond AndroidX and Material Components.
 
-This is v3, built from the project note in the vault
-(`Projects/Eat-Me-Neurodivergent.md`); the change list from v2 is in
-`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`. v1 used a different brief and is
-archived at `/home/b/dev/old/eat-me-neurodivergent-v1`.
+This is v3.1.0, built from the project note in the vault
+(`Projects/Eat-Me-Neurodivergent.md`); the change lists are in
+`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md` and `Release-3.1.0.md`. v1 used a
+different brief and is archived at `/home/b/dev/old/eat-me-neurodivergent-v1`.
 
 ## What it does
 
@@ -33,6 +33,14 @@ small hollow ones, the times printed above them, the night hours shaded, midnigh
 wherever it falls, and the right edge is now. It replaces the old Today list, so a day
 that crossed midnight is one continuous picture instead of two halves. Nothing on it is
 tappable and nothing is counted.
+
+The app also says what it cannot do. When notifications are off for it, or the phone
+withholds exact alarms, the front screen carries one flat line about it and a tap opens
+the system page for that switch. Settings has the same rows, a battery row, and **Send a
+test notification**: a real reminder-shaped notification, so the permission, the channel
+and the sound can be checked in two seconds instead of a week.
+
+A reminder speaks once, at the time it was set for. There is no earlier heads-up.
 
 The front screen says `nothing logged` until the first event. There is no onboarding and
 no nagging an empty screen.
@@ -87,7 +95,8 @@ One append-only file, `files/events.ndjson`, a JSON object per line. The whole a
 replay of that file: meals, edits, deletions, reminders, alerts, settings, clock jumps.
 Nothing is ever rewritten in place, and edits and deletions are new events that point at
 an earlier one. The band adds no events and no fields: it is drawn from the meals and
-settings the log already holds.
+settings the log already holds. `warning` is still a valid `alert_fired` kind so that 2.x
+and 3.0 logs replay exactly as written; nothing writes it since 3.1.0.
 
 **Copy JSON** in settings puts the entire log on the clipboard as one document
 (`schema`, `exported_at`, `app_version`, `timezone`, `event_count`, `events`). It is the
@@ -111,11 +120,17 @@ created.
   settings row asks for) and posts on a silent channel while DND is on. Android does not
   let an app force its notifications through DND on its own: the phone also has to allow
   this app under *Do Not Disturb → Apps*. Without that, DND wins, which is the lesser lie.
-- **Exact alarms.** With `SCHEDULE_EXACT_ALARM` granted the reminder is exact. Without it
-  the app uses `setAndAllowWhileIdle`, which can be minutes late in deep doze.
+- **Exact alarms.** Android 14 and newer do not grant `SCHEDULE_EXACT_ALARM` to a new
+  install by default. With it granted the reminder is exact; without it the app uses
+  `setAndAllowWhileIdle`, which can be minutes or more off in deep doze, and the front
+  screen says so until the switch is flipped.
+- **Battery.** An OEM that sleeps the app (Samsung's sleeping apps, Xiaomi's manager)
+  cancels its alarms and can drop its ongoing notification. Settings offers the phone's
+  battery page; the app cannot exempt itself without a permission this build refuses.
 - **Never installed on hardware.** Everything green above is verification, not validation.
   The real test is a week of use.
 - Notification permission denied means no reminders, though logging and export still work.
+  The front screen states it and the settings screen can send a test to prove it.
 
 ## Layout
 

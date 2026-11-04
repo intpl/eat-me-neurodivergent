@@ -94,13 +94,13 @@ class NotificationCenterTest {
     }
 
     @Test
-    fun theWarningIsSilentAndNamesTheTime() {
+    fun theTestNotificationLooksLikeAReminderAndUsesItsChannel() {
         center.ensureChannels(state)
-        val due = now + 5 * MINUTE_MS
-        center.showWarning(due)
-        val notification = posted()!!
-        assertEquals(NotificationCenter.CH_SILENT, notification.channelId)
-        assertEquals("12:05 in 5 minutes", notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString())
+        center.test(state, now)
+        val notification = shadowOf(manager).getNotification(NotificationCenter.TEST_NOTIFICATION_ID)!!
+        assertEquals("alert_sound_eat_something_v", notification.channelId)
+        assertEquals("Test reminder.", notification.extras.getCharSequence(Notification.EXTRA_TITLE).toString())
+        assertTrue(notification.extras.getCharSequence(Notification.EXTRA_TEXT).toString().contains("reminder"))
     }
 
     @Test
