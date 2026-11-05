@@ -20,7 +20,7 @@ named here is executed.
 | Only the first alert of a run makes a sound | `NotificationCenter.showAlert` channel choice | `AppControllerTest.theDueAlarmIsTheOnlyAudibleOneOfARun` |
 | The voice is flat | `Text` | `TextTest.noBannedWordEverReachesTheScreen`, `tools/wording.py` |
 | A reminder speaks at the time it was set for, and not before | `Reducer.planForSet`, `Planner.overdueStep` | `AppControllerTest.anExplicitReminderSpeaksAtItsOwnTimeAndNotBefore`, `PlannerTest.nothingIsDueBeforeTheRemindersOwnInstant` |
-| The app does not open without notifications, exact reminders and do-not-disturb access | `GatedActivity.gated`, `Accesses.missing` | `MainActivityTest.theFrontDoesNotOpenWithoutDoNotDisturbAccess`, `SettingsAndHistoryTest.theSettingsScreenIsBehindTheGateLikeEverythingElse` |
+| The app does not open without notifications, exact reminders, do-not-disturb access and unrestricted battery use | `GatedActivity.gated`, `Accesses.missing` | `MainActivityTest.theFrontDoesNotOpenWithoutDoNotDisturbAccess`, `SettingsAndHistoryTest.theSettingsScreenIsBehindTheGateLikeEverythingElse` |
 | The gate names each withheld switch and opens the phone's page for it | `AccessActivity`, `Accesses.settingsIntent` | `AccessTest.theGateNamesEveryWithheldSwitch`, `AccessTest.eachRowOpensThePhonesOwnPage` |
 | The gate drops what the phone allows, and opens the app when nothing is withheld | `AccessActivity.check` | `AccessTest.theGateDropsTheSwitchesThePhoneAllows`, `AccessTest.theGateLetsTheAppThroughWhenNothingIsWithheld`, `MainActivityTest.theFrontOpensWhenThePhoneAllowsEverything` |
 | A test notification proves the permission, the channel and the sound | `NotificationCenter.test`, `SettingsActivity.sendTestNotification` | `NotificationCenterTest.theTestNotificationLooksLikeAReminderAndUsesItsChannel` |
@@ -30,10 +30,10 @@ named here is executed.
 | Night hours can be changed from settings, both to a window that crosses midnight | `Settings.changed`, `SettingsActivity.editNightHours` | `SettingsTest.theNightHoursTheSettingsScreenWritesAreAccepted`, `SettingsTest.nightHoursWrittenAsBareMinutesStillReplay`, `AppControllerTest.theNightWindowFromTheSettingsScreenIsTheOneTheWarningUses`, `SettingsAndHistoryTest.theNightHoursRowShowsTheWindowThePickIsStoredAs` |
 | The front shows last, next, the band, and links | `MainActivity.render` | `MainActivityTest.theFrontScreenFollowsTheLog` |
 | The band is the last 24 hours, ending now | `TimelineBuilder.build` | `TimelineTest.theWindowIsTheLastTwentyFourHoursEndingNow` |
+| The band names the current time at its right edge, and draws no midnight line | `TimelineView.onDraw` | `ScreenshotTest.theFrontWithADayOnTheBand`, `ScreenshotNightTest` |
 | The band replaces the Today list | `activity_main.xml`, `TimelineView` | `MainActivityTest.aFreshInstallShowsTheTwoButtonsAndSaysNothingElse` |
 | Meals are filled dots, snacks hollow, times printed | `TimelineView.onDraw`, `TimelineView.drawTimes` | `MainActivityTest.theFrontScreenFollowsTheLog`, `ScreenshotTest.theFrontWithADayOnTheBand` |
 | Night hours are shaded from the setting, including a window that crosses midnight | `TimelineBuilder.nights` | `TimelineTest.theNightHoursAreClippedToTheWindow`, `TimelineTest.theNightHoursFollowTheSetting`, `TimelineTest.aNightWindowThatCrossesMidnightIsOneStretch` |
-| Midnight is a line inside the band, never its edge | `TimelineBuilder.midnights` | `TimelineTest.midnightIsMarkedInsideTheWindowNotAtItsEdge` |
 | Hour labels follow the phone's clock across a DST change | `TimelineBuilder.hourMarks` | `TimelineTest.springForwardKeepsTheLabelsOnTheClock`, `TimelineTest.fallBackKeepsTheLabelsOnTheClock` |
 | Nothing on the band is a judgement | `Text`, `TimelineView` | `TextTest.noBannedWordEverReachesTheScreen`, `tools/wording.py` |
 | The stale line after eight hours | `Text.staleLine` | `TextTest.theStaleLineAppearsOnlyAfterEightHours` |

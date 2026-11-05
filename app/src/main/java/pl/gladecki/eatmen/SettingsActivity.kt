@@ -6,7 +6,6 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PowerManager
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -68,9 +67,6 @@ class SettingsActivity : GatedActivity() {
         addSwitch(list, getString(R.string.settings_vibration), settings.vibration) { checked ->
             controller.changeSetting(Settings.KEY_VIBRATION, checked.toString())
             render()
-        }
-        if (!batteryUnrestricted()) {
-            addRow(list, getString(R.string.settings_battery), "") { openBatterySettings() }
         }
         addRow(list, getString(R.string.settings_test), "") { sendTestNotification() }
         addRow(list, getString(R.string.settings_copy_json), "") { copyJson() }
@@ -153,17 +149,6 @@ class SettingsActivity : GatedActivity() {
             }
             .setNegativeButton(R.string.action_cancel, null)
             .show()
-    }
-
-    /** The phone's own battery page: no permission is needed to open it, only to ask for the exemption. */
-    private fun batteryUnrestricted(): Boolean = try {
-        getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
-    } catch (e: Exception) {
-        true
-    }
-
-    private fun openBatterySettings() {
-        startActivity(Intent(android.provider.Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS))
     }
 
     /**

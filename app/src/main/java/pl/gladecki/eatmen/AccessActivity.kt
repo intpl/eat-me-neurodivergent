@@ -81,6 +81,7 @@ class AccessActivity : AppCompatActivity() {
             Access.NOTIFICATIONS -> R.string.access_notifications
             Access.EXACT_ALARMS -> R.string.access_exact_alarms
             Access.DO_NOT_DISTURB -> R.string.access_do_not_disturb
+            Access.BATTERY -> R.string.access_battery
         },
     )
 }

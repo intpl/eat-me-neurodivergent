@@ -50,8 +50,7 @@
     <string name="settings_vibration">Vibration</string>
     <string name="settings_copy_json">Copy JSON</string>
     <string name="settings_erase">Erase everything</string>
-    <string name="settings_battery">Allow unrestricted battery use</string>
-    <string name="settings_test">Send a test notification</string>
+        <string name="settings_test">Send a test notification</string>
     <string name="settings_gap_hint">hours</string>
 
     <string name="edit_history_title">Last 24 hours</string>
@@ -82,6 +81,7 @@
     <string name="access_notifications">notifications are off for this app</string>
     <string name="access_exact_alarms">exact reminders are off, times can drift</string>
     <string name="access_do_not_disturb">do-not-disturb access is off, a reminder may sound during it</string>
+    <string name="access_battery">battery use is restricted, the phone can sleep the app</string>
     <string name="access_allow">allow</string>
     <string name="access_check">Check again</string>
 

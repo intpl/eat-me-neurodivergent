@@ -77,22 +77,6 @@ class TimelineTest {
     }
 
     @Test
-    fun midnightIsMarkedInsideTheWindowNotAtItsEdge() {
-        val now = local(2026, 11, 4, 15, 20)
-        val band = TimelineBuilder.build(now, emptyList(), settings, athens)
-        assertEquals(listOf(local(2026, 11, 4, 0, 0)), band.midnights)
-        assertTrue(band.midnights.single() > band.start)
-        assertTrue(band.midnights.single() < band.end)
-    }
-
-    @Test
-    fun aWindowThatEndsJustAfterMidnightStillHasItsMidnight() {
-        val now = local(2026, 11, 4, 0, 10)
-        val band = TimelineBuilder.build(now, emptyList(), settings, athens)
-        assertEquals(listOf(local(2026, 11, 4, 0, 0)), band.midnights)
-    }
-
-    @Test
     fun theNightHoursAreClippedToTheWindow() {
         val now = local(2026, 11, 4, 15, 20)
         val band = TimelineBuilder.build(now, emptyList(), settings, athens)
@@ -158,7 +142,6 @@ class TimelineTest {
             listOf("12:00", "15:00", "18:00", "21:00", "00:00", "04:00", "06:00", "09:00", "12:00"),
             band.hourMarks.map { clock(it) },
         )
-        assertEquals(listOf(local(2026, 3, 29, 0, 0)), band.midnights)
         assertTrue("the band is still 24 real hours", band.span == 24 * HOUR_MS)
     }
 
@@ -185,11 +168,11 @@ class TimelineTest {
     @Test
     fun mealsAreDrawnInThePhonesZoneNotUtc() {
         // 22:30 UTC is 00:30 in Athens, so a meal at that instant belongs to the
-        // next local day: it must sit to the right of the midnight mark.
+        // next local day: it must sit to the right of local midnight.
         val now = local(2026, 11, 4, 15, 20)
         val late = local(2026, 11, 4, 0, 30)
         val band = TimelineBuilder.build(now, listOf(Meal("late", late, Kind.SNACK)), settings, athens)
-        assertTrue(band.meals.single().eatenAt > band.midnights.single())
+        assertTrue(band.meals.single().eatenAt > local(2026, 11, 4, 0, 0))
     }
 
     @Test

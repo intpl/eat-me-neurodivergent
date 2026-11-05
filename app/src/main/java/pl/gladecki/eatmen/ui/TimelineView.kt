@@ -22,8 +22,9 @@ import java.time.ZoneId
  * The band on the front screen: the last 24 hours as one strip.
  *
  * A meal is a filled dot, a snack a smaller hollow one, the night hours are
- * shaded, midnight is a line wherever it falls, and the right edge is now. It is
- * a picture: nothing here is tappable and nothing is counted.
+ * shaded, the clock's hours are labelled under the strip, and the right edge is
+ * now, named there. It is a picture: nothing here is tappable and nothing is
+ * counted.
  */
 class TimelineView @JvmOverloads constructor(
     context: Context,
@@ -42,10 +43,6 @@ class TimelineView @JvmOverloads constructor(
         style = Paint.Style.STROKE
         strokeWidth = dp(1f)
     }
-    private val midnightPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-        style = Paint.Style.STROKE
-        strokeWidth = dp(1.5f)
-    }
     private val nowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val mealPaint = Paint(Paint.ANTI_ALIAS_FLAG)
     private val snackFill = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -55,7 +52,7 @@ class TimelineView @JvmOverloads constructor(
     }
     private val timeText = textPaint(dp(12f), Typeface.create("sans-serif-medium", Typeface.NORMAL))
     private val tickText = textPaint(dp(10f), Typeface.create("sans-serif", Typeface.NORMAL))
-    private val midnightText = textPaint(dp(10f), Typeface.create("sans-serif-medium", Typeface.NORMAL))
+    private val nowText = textPaint(dp(10f), Typeface.create("sans-serif-medium", Typeface.NORMAL))
 
     private val trackPath = Path()
 
@@ -139,28 +136,27 @@ class TimelineView @JvmOverloads constructor(
             }
         }
 
-        // Clock ticks, then the labels under them.
+        // The right edge is now, and it is the one moment the band names: the
+        // current time sits under that edge in the heavier voice.
+        nowText.color = ink
+        val nowLabel = clockLabel(timeline.end)
+        val nowLeft = w - nowText.measureText(nowLabel)
+
+        // Clock ticks, then the labels under them, dropping any that the current
+        // time would sit on top of.
         tickPaint.color = outline
         tickText.color = inkSoft
-        val midnightX = timeline.midnights.map { x(it) }
         for (mark in timeline.hourMarks) {
             val mx = x(mark)
             canvas.drawLine(mx, trackBottom, mx, trackBottom + dp(4f), tickPaint)
-            if (midnightX.any { kotlin.math.abs(it - mx) < dp(18f) }) continue
-            drawCentred(canvas, clockLabel(mark), mx, dp(82f), tickText, w)
+            val label = clockLabel(mark)
+            val labelWidth = tickText.measureText(label)
+            if (centredLeft(tickText, label, mx, w) + labelWidth > nowLeft - dp(6f)) continue
+            canvas.drawText(label, centredLeft(tickText, label, mx, w), dp(82f), tickText)
         }
+        canvas.drawText(nowLabel, nowLeft, dp(82f), nowText)
 
-        // Midnight: taller than a tick, and named.
-        midnightPaint.color = ColorUtils.setAlphaComponent(inkSoft, 220)
-        midnightText.color = ink
-        for (midnight in timeline.midnights) {
-            val mx = x(midnight)
-            canvas.drawLine(mx, trackTop - dp(8f), mx, trackBottom + dp(4f), midnightPaint)
-            drawCentred(canvas, clockLabel(midnight), mx, dp(82f), midnightText, w)
-        }
-
-        // The cut edge is now: the strip stops here, and it is the one moment
-        // the band is entitled to name.
+        // The cut edge: the strip stops here.
         nowPaint.color = accent
         canvas.drawRect(w - dp(3f), trackTop, w, trackBottom, nowPaint)
 
@@ -196,9 +192,14 @@ class TimelineView @JvmOverloads constructor(
         return "%02d:%02d".format(local.hour, local.minute)
     }
 
-    private fun drawCentred(canvas: Canvas, text: String, cx: Float, baseline: Float, paint: Paint, w: Float) {
+    /** Where a centred label starts, kept on the strip even at its edges. */
+    private fun centredLeft(paint: Paint, text: String, cx: Float, w: Float): Float {
         val width = paint.measureText(text)
-        canvas.drawText(text, (cx - width / 2f).coerceIn(0f, (w - width).coerceAtLeast(0f)), baseline, paint)
+        return (cx - width / 2f).coerceIn(0f, (w - width).coerceAtLeast(0f))
+    }
+
+    private fun drawCentred(canvas: Canvas, text: String, cx: Float, baseline: Float, paint: Paint, w: Float) {
+        canvas.drawText(text, centredLeft(paint, text, cx, w), baseline, paint)
     }
 
     private fun textPaint(sizePx: Float, typeface: Typeface): Paint =

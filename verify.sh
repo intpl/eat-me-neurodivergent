@@ -33,6 +33,7 @@ EXPECTED=$(printf '%s\n' \
   android.permission.ACCESS_NOTIFICATION_POLICY \
   android.permission.POST_NOTIFICATIONS \
   android.permission.RECEIVE_BOOT_COMPLETED \
+  android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS \
   android.permission.SCHEDULE_EXACT_ALARM \
   android.permission.VIBRATE | sort)
 if [ "$PERMS" != "$EXPECTED" ]; then

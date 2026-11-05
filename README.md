@@ -4,11 +4,10 @@ A timing-only meal reminder for Android. It never asks what you ate, only when.
 Package `pl.gladecki.eatmen`, minSdk 26 (Android 8.0), targetSdk 35, Kotlin, Gradle,
 plain Views, no Compose, no dependencies beyond AndroidX and Material Components.
 
-This is v3.3.0, built from the project note in the vault
+This is v3.4.0, built from the project note in the vault
 (`Projects/Eat-Me-Neurodivergent.md`); the change lists are in
-`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`, `Release-3.1.0.md`,
-`Release-3.2.0.md` and `Release-3.3.0.md`. v1 used a different brief and is archived at
-`/home/b/dev/old/eat-me-neurodivergent-v1`.
+`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md` through `Release-3.4.0.md`. v1 used a
+different brief and is archived at `/home/b/dev/old/eat-me-neurodivergent-v1`.
 
 ## What it does
 
@@ -31,17 +30,18 @@ notification, then the first audible alert one meal gap later (sixteen hours aft
 tap with the default four-hour meal gap).
 
 Under the buttons, one strip draws the last 24 hours: meals as filled dots, snacks as
-small hollow ones, the times printed above them, the night hours shaded, midnight a line
-wherever it falls, and the right edge is now. It replaces the old Today list, so a day
-that crossed midnight is one continuous picture instead of two halves. Nothing on it is
-tappable and nothing is counted.
+small hollow ones, the times printed above them, the night hours shaded, the hours
+labelled under the strip, and the current time at the right edge in its own heavier voice.
+Midnight has no line of its own; the shaded night and the labels carry it. It replaces the
+old Today list, so a day that crossed midnight is one continuous picture instead of two
+halves. Nothing on it is tappable and nothing is counted.
 
-**The app does not open without three things.** Until the phone allows notifications,
-exact reminders and do-not-disturb access, every screen is replaced by one gate: the
-switches it is missing, each opening the phone's own page, and `Check again`. Nothing is
-logged and nothing is planned until all three are on. Settings keeps a battery row and
-**Send a test notification**: a real reminder-shaped notification, so the permission, the
-channel and the sound can be checked in two seconds instead of a week.
+**The app does not open without four things.** Until the phone allows notifications,
+exact reminders, do-not-disturb access and unrestricted battery use, every screen is
+replaced by one gate: the switches it is missing, each opening the phone's own page, and
+`Check again`. Nothing is logged and nothing is planned until all four are on. Settings
+keeps **Send a test notification**: a real reminder-shaped notification, so the permission,
+the channel and the sound can be checked in two seconds instead of a week.
 
 A reminder speaks once, at the time it was set for. There is no earlier heads-up.
 
@@ -66,7 +66,8 @@ build is unsigned and the debug APK is the one to install.
 `./verify.sh` runs the unit tests, the Robolectric tests, the build, and the gates:
 
 - the manifest carries exactly `POST_NOTIFICATIONS`, `RECEIVE_BOOT_COMPLETED`,
-  `SCHEDULE_EXACT_ALARM`, `ACCESS_NOTIFICATION_POLICY`, `VIBRATE` — and no `INTERNET`
+  `SCHEDULE_EXACT_ALARM`, `ACCESS_NOTIFICATION_POLICY`,
+  `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS`, `VIBRATE` — and no `INTERNET`
 - no `android.*` import anywhere in `core`
 - no banned word in any user-visible string (see `tools/wording.py`)
 - the three voice clips are inside the APK
@@ -128,11 +129,12 @@ created.
   `setAndAllowWhileIdle`, which can be minutes or more off in deep doze. The app refuses
   to open until the switch is flipped.
 - **Battery.** An OEM that sleeps the app (Samsung's sleeping apps, Xiaomi's manager)
-  cancels its alarms and can drop its ongoing notification. Settings offers the phone's
-  battery page; the app cannot exempt itself without a permission this build refuses.
+  cancels its alarms and can drop its ongoing notification. The exemption is now one of
+  the four things the app requires: the gate asks for it with the phone's own dialog, which
+  is why `REQUEST_IGNORE_BATTERY_OPTIMIZATIONS` is in the manifest.
 - **Never installed on hardware.** Everything green above is verification, not validation.
   The real test is a week of use.
-- Without all three accesses the app does not open at all: the gate names what the phone
+- Without all four accesses the app does not open at all: the gate names what the phone
   withholds and opens the phone's page for it.
 
 ## Layout

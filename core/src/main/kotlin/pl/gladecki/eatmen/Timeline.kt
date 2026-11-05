@@ -12,14 +12,13 @@ data class Span(val start: Long, val end: Long)
  *
  * It is a picture of what happened, so everything here is a fact from the log.
  * Positions are left to the view; this decides what falls inside the window and
- * where the clock's own boundaries sit.
+ * where the clock's own hours sit.
  */
 data class Timeline(
     val start: Long,
     val end: Long,
     val meals: List<Meal>,
     val nights: List<Span>,
-    val midnights: List<Long>,
     val hourMarks: List<Long>,
 ) {
     val span: Long get() = end - start
@@ -30,7 +29,8 @@ data class Timeline(
  *
  * The window is a rolling 24 hours rather than a calendar day on purpose: the
  * long gaps that matter cross midnight, and a day chopped at 00:00 hides exactly
- * the stretch this app exists for. Midnight is still marked, wherever it falls.
+ * the stretch this app exists for. Midnight itself is not marked; the shaded
+ * night hours and the labels carry it.
  */
 object TimelineBuilder {
 
@@ -44,7 +44,6 @@ object TimelineBuilder {
             end = now,
             meals = meals.filter { it.isLive() && it.eatenAt in start..now }.sortedBy { it.eatenAt },
             nights = nights(start, now, settings, zone),
-            midnights = midnights(start, now, zone),
             hourMarks = hourMarks(start, now, zone),
         )
     }
@@ -65,20 +64,6 @@ object TimelineBuilder {
             val spanEnd = at(endDay, endMinute, zone)
             val clipped = Span(maxOf(spanStart, from), minOf(spanEnd, to))
             if (clipped.end > clipped.start) out += clipped
-            day = day.plusDays(1)
-        }
-        return out
-    }
-
-    /** The local midnights inside the window. There is at most one in 24 hours. */
-    private fun midnights(from: Long, to: Long, zone: ZoneId): List<Long> {
-        val first = Instant.ofEpochMilli(from).atZone(zone).toLocalDate()
-        val last = Instant.ofEpochMilli(to).atZone(zone).toLocalDate()
-        val out = mutableListOf<Long>()
-        var day = first
-        while (!day.isAfter(last)) {
-            val at = day.atStartOfDay(zone).toInstant().toEpochMilli()
-            if (at > from && at <= to) out += at
             day = day.plusDays(1)
         }
         return out

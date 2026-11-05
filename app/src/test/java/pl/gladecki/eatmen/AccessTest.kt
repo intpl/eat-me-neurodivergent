@@ -2,6 +2,7 @@ package pl.gladecki.eatmen
 
 import android.app.NotificationManager
 import android.content.Context
+import android.os.PowerManager
 import android.provider.Settings
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
@@ -31,6 +32,8 @@ class AccessTest {
         notifications.setNotificationsEnabled(false)
         notifications.setNotificationPolicyAccessGranted(false)
         ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        shadowOf(context.getSystemService(PowerManager::class.java))
+            .setIgnoringBatteryOptimizations(context.packageName, false)
     }
 
     private fun gate() = Robolectric.buildActivity(AccessActivity::class.java).setup().get()
@@ -51,6 +54,7 @@ class AccessTest {
         assertTrue(titles.contains("notifications are off for this app"))
         assertTrue(titles.contains("exact reminders are off, times can drift"))
         assertTrue(titles.contains("do-not-disturb access is off, a reminder may sound during it"))
+        assertTrue(titles.contains("battery use is restricted, the phone can sleep the app"))
         assertTrue(titles.contains("Check again"))
     }
 
@@ -58,6 +62,8 @@ class AccessTest {
     fun theGateDropsTheSwitchesThePhoneAllows() {
         notifications.setNotificationsEnabled(true)
         ShadowAlarmManager.setCanScheduleExactAlarms(true)
+        shadowOf(context.getSystemService(PowerManager::class.java))
+            .setIgnoringBatteryOptimizations(context.packageName, true)
         assertEquals(
             listOf("do-not-disturb access is off, a reminder may sound during it", "Check again"),
             rows(gate()).map { it.first },
@@ -67,7 +73,7 @@ class AccessTest {
     @Test
     fun eachRowOpensThePhonesOwnPage() {
         val activity = gate()
-        val list = (0 until 3).map { index ->
+        val list = (0 until 4).map { index ->
             val binding = ActivityAccessBinding.bind(
                 activity.findViewById<android.view.ViewGroup>(android.R.id.content).getChildAt(0),
             )
@@ -87,6 +93,11 @@ class AccessTest {
         list[2].performClick()
         assertEquals(
             Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS,
+            shadowOf(activity).nextStartedActivity.action,
+        )
+        list[3].performClick()
+        assertEquals(
+            Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS,
             shadowOf(activity).nextStartedActivity.action,
         )
     }

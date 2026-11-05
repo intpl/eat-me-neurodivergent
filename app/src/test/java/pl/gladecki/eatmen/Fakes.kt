@@ -2,6 +2,7 @@ package pl.gladecki.eatmen
 
 import android.app.NotificationManager
 import android.content.Context
+import android.os.PowerManager
 import org.robolectric.Shadows.shadowOf
 import org.robolectric.shadows.ShadowAlarmManager
 import pl.gladecki.eatmen.core.State
@@ -13,6 +14,8 @@ fun grantEverything(context: Context) {
         setNotificationPolicyAccessGranted(true)
     }
     ShadowAlarmManager.setCanScheduleExactAlarms(true)
+    shadowOf(context.getSystemService(PowerManager::class.java))
+        .setIgnoringBatteryOptimizations(context.packageName, true)
 }
 
 class FakeClock(var wall: Long = BASE, var elapsedMs: Long = 1_000) : Clock {

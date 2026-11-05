@@ -37,6 +37,13 @@ abstract class ScreenshotBase {
             setNotificationsEnabled(true)
             setNotificationPolicyAccessGranted(true)
         }
+        shadowOf(
+            ApplicationProvider.getApplicationContext<android.app.Application>()
+                .getSystemService(android.os.PowerManager::class.java),
+        ).setIgnoringBatteryOptimizations(
+            ApplicationProvider.getApplicationContext<android.app.Application>().packageName,
+            true,
+        )
     }
 
     fun seed() {
@@ -110,14 +117,14 @@ class ScreenshotTest : ScreenshotBase() {
 
     @Test
     fun theGateWhenThePhoneWithholdsAccess() {
-        shadowOf(
-            ApplicationProvider.getApplicationContext<android.app.Application>()
-                .getSystemService(NotificationManager::class.java),
-        ).apply {
+        val app = ApplicationProvider.getApplicationContext<android.app.Application>()
+        shadowOf(app.getSystemService(NotificationManager::class.java)).apply {
             setNotificationsEnabled(false)
             setNotificationPolicyAccessGranted(false)
         }
         ShadowAlarmManager.setCanScheduleExactAlarms(false)
+        shadowOf(app.getSystemService(android.os.PowerManager::class.java))
+            .setIgnoringBatteryOptimizations(app.packageName, false)
         shot(Robolectric.buildActivity(AccessActivity::class.java).setup().get(), "gate")
     }
 
