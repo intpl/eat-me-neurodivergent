@@ -48,7 +48,7 @@ sealed interface Plan {
 data class Settings(
     val mealGapMs: Long = 4 * HOUR_MS,
     val snackGapMs: Long = 2 * HOUR_MS,
-    val tomorrowSilenceMs: Long = 8 * HOUR_MS,
+    val tomorrowSilenceMs: Long = 12 * HOUR_MS,
     val notNowMs: Long = 10 * MINUTE_MS,
     val nightStartMinute: Int = 23 * 60,
     val nightEndMinute: Int = 7 * 60,
@@ -65,8 +65,8 @@ data class Settings(
         KEY_NIGHT -> {
             val parts = value.split("-")
             if (parts.size == 2) {
-                val start = parseClock(parts[0])
-                val end = parseClock(parts[1])
+                val start = parseMinuteOfDay(parts[0])
+                val end = parseMinuteOfDay(parts[1])
                 if (start != null && end != null) copy(nightStartMinute = start, nightEndMinute = end) else this
             } else this
         }
@@ -80,7 +80,7 @@ data class Settings(
         KEY_SNACK_GAP -> snackGapMs.toString()
         KEY_TOMORROW_SILENCE -> tomorrowSilenceMs.toString()
         KEY_NOT_NOW -> notNowMs.toString()
-        KEY_NIGHT -> "$nightStartMinute-$nightEndMinute"
+        KEY_NIGHT -> clockOf(nightStartMinute) + "-" + clockOf(nightEndMinute)
         KEY_SOUND -> soundId
         KEY_VIBRATION -> vibration.toString()
         else -> ""
@@ -103,14 +103,25 @@ data class Settings(
         private fun parseMinutes(raw: String): Long? =
             raw.trim().toLongOrNull()?.takeIf { it > 0 }
 
-        private fun parseClock(raw: String): Int? {
-            val parts = raw.trim().split(":")
-            if (parts.size != 2) return null
-            val h = parts[0].toIntOrNull() ?: return null
-            val m = parts[1].toIntOrNull() ?: return null
-            if (h !in 0..23 || m !in 0..59) return null
-            return h * 60 + m
+        /**
+         * Night hours reach the log in two shapes: "21:00-09:00" from the
+         * settings screen, and "1260-540" from the 3.0.0/3.1.0 picker. Both
+         * parse. A value in neither shape changes nothing.
+         */
+        private fun parseMinuteOfDay(raw: String): Int? {
+            val text = raw.trim()
+            val colon = text.indexOf(':')
+            if (colon >= 0) {
+                val h = text.substring(0, colon).toIntOrNull() ?: return null
+                val m = text.substring(colon + 1).toIntOrNull() ?: return null
+                if (h !in 0..23 || m !in 0..59) return null
+                return h * 60 + m
+            }
+            return text.toIntOrNull()?.takeIf { it in 0 until 24 * 60 }
         }
+
+        private fun clockOf(minuteOfDay: Int): String =
+            "%02d:%02d".format(minuteOfDay / 60, minuteOfDay % 60)
     }
 }
 

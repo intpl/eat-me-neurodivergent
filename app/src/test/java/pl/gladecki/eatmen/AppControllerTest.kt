@@ -18,6 +18,7 @@ import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.MINUTE_MS
 import pl.gladecki.eatmen.core.Plan
 import pl.gladecki.eatmen.core.Planner
+import pl.gladecki.eatmen.core.Settings
 import pl.gladecki.eatmen.core.Source
 import pl.gladecki.eatmen.core.sequentialIds
 import java.io.File
@@ -104,20 +105,23 @@ class AppControllerTest {
     }
 
     @Test
-    fun tomorrowIsSilentForEightHoursAndNeverCountsDown() {
+    fun tomorrowIsSilentForTwelveHoursAndNeverCountsDown() {
         controller.tomorrow()
         assertEquals(RecordingNotifications.Call.Cancel, notifications.last())
-        assertEquals(FakeClock.BASE + 8 * HOUR_MS, alarms.armedAt)
-        assertEquals(Plan.TomorrowSilent(FakeClock.BASE + 8 * HOUR_MS, FakeClock.BASE + 12 * HOUR_MS), controller.state.plan)
+        assertEquals(FakeClock.BASE + 12 * HOUR_MS, alarms.armedAt)
+        assertEquals(
+            Plan.TomorrowSilent(FakeClock.BASE + 12 * HOUR_MS, FakeClock.BASE + 16 * HOUR_MS),
+            controller.state.plan,
+        )
     }
 
     @Test
     fun tomorrowSpeaksOnceSilentlyThenOnceAudiblyAMealGapLater() {
         controller.tomorrow()
-        clock.advance(8 * HOUR_MS)
+        clock.advance(12 * HOUR_MS)
         controller.onAlarm()
         assertEquals(RecordingNotifications.Call.SilentStep(clock.wall), notifications.last())
-        assertEquals(FakeClock.BASE + 12 * HOUR_MS, alarms.armedAt)
+        assertEquals(FakeClock.BASE + 16 * HOUR_MS, alarms.armedAt)
 
         clock.advance(4 * HOUR_MS)
         controller.onAlarm()
@@ -222,6 +226,14 @@ class AppControllerTest {
         // Six hours later, at 20:00 UTC = 22:00 Athens, the next alert lands at 02:00.
         controller.logMeal(FakeClock.BASE + 10 * HOUR_MS, Kind.MEAL)
         assertNotNull(controller.nightAlertAt(FakeClock.BASE + 10 * HOUR_MS))
+    }
+
+    @Test
+    fun theNightWindowFromTheSettingsScreenIsTheOneTheWarningUses() {
+        // 10:00Z is 12:00 in Athens, so 13:00 is not night until the window starts at noon.
+        controller.changeSetting(Settings.KEY_NIGHT, "12:00-09:00")
+        controller.planAhead(FakeClock.BASE + HOUR_MS)
+        assertEquals(FakeClock.BASE + HOUR_MS, controller.nightAlertAt())
     }
 
     @Test

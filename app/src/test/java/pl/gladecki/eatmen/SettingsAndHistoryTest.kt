@@ -48,7 +48,7 @@ class SettingsAndHistoryTest {
         }
         assertTrue(rows.contains("Meal gap" to "4h"))
         assertTrue(rows.contains("Snack gap" to "2h"))
-        assertTrue(rows.contains("Tomorrow silence" to "8h"))
+        assertTrue(rows.contains("Tomorrow silence" to "12h"))
         assertTrue(rows.contains("Not now" to "10m"))
         assertTrue(rows.contains("Night hours" to "23:00–07:00"))
         assertTrue(rows.contains("Sound" to "Eat something"))
@@ -105,6 +105,15 @@ class SettingsAndHistoryTest {
 
         assertEquals(3 * 3_600_000L, controller.settings().mealGapMs)
         assertEquals("3h", controller.settingValue(Settings.KEY_MEAL_GAP).let { pl.gladecki.eatmen.core.Text.short(it.toLong()) })
+    }
+
+    @Test
+    fun theNightHoursRowShowsTheWindowThePickIsStoredAs() {
+        // The picker calls this exact thing with clock times when both ends are chosen.
+        controller.changeSetting(Settings.KEY_NIGHT, "21:00-09:00")
+        val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
+        val row = settingsRows(activity).first { it.first == "Night hours" }.second
+        assertEquals("21:00–09:00", row.findViewById<TextView>(R.id.settingValue).text.toString())
     }
 
     @Test

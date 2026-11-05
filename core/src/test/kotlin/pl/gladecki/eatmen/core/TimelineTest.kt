@@ -114,6 +114,19 @@ class TimelineTest {
     }
 
     @Test
+    fun aNightWindowThatCrossesMidnightIsOneStretch() {
+        // The author's own window: 21:00 to 09:00, drawn across the midnight line.
+        val now = local(2026, 11, 4, 15, 20)
+        val night = settings.copy(nightStartMinute = 21 * 60, nightEndMinute = 9 * 60)
+        val band = TimelineBuilder.build(now, emptyList(), night, athens)
+        assertEquals(1, band.nights.size)
+        val span = band.nights.single()
+        assertEquals("21:00", clock(span.start))
+        assertEquals("09:00", clock(span.end))
+        assertEquals(12 * HOUR_MS, span.end - span.start)
+    }
+
+    @Test
     fun aNightWindowThatDoesNotCrossMidnightStaysInsideItsDay() {
         val now = local(2026, 11, 4, 15, 20)
         val night = settings.copy(nightStartMinute = 22 * 60, nightEndMinute = 23 * 60)

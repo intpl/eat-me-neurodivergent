@@ -13,7 +13,7 @@ named here is executed.
 | The reminder follows the newest meal, not the last one logged | `Actions.logMeal` | `ActionsTest.loggingAnOlderMealDoesNotDragTheReminderBackwards` |
 | The new time can be changed in one tap | `MainActivity.linkChange` | `MainActivityTest.theChangeLinkChangesTheReminderInOneTap` |
 | **I will eat** only sets a reminder, never logs | `Actions.planAhead` | `MainActivityTest.iWillEatSetsAReminderAndLogsNothing` |
-| **Tomorrow** is 8h of silence, one silent step, then a meal gap | `Actions.tomorrow`, `Planner.tomorrowSilence` | `AppControllerTest.tomorrowSpeaksOnceSilentlyThenOnceAudiblyAMealGapLater` |
+| **Tomorrow** is 12h of silence, one silent step, then a meal gap | `Actions.tomorrow`, `Planner.tomorrowSilence` | `AppControllerTest.tomorrowSpeaksOnceSilentlyThenOnceAudiblyAMealGapLater` |
 | The due alert offers **Ate** and **Not now** | `NotificationCenter.showAlert` | `NotificationCenterTest.theAlertStatesTheTimeTheGapAndTwoActions` |
 | **Not now** pushes ten minutes, forever | `Actions.defer`, `Reducer` | `AppControllerTest.notNowPushesTheReminderTenMinutesAndKeepsTheRunSilent` |
 | An ignored alert repeats on the same rhythm | `Reducer.planAfterAlert` | `ReducerTest.repeatsContinueOnTheSameRhythm` |
@@ -26,11 +26,12 @@ named here is executed.
 | A log written before 3.1.0 still replays its warning step | `Reducer.planAfterAlert` | `ReducerTest.aWarningFromAnOlderLogReplaysWithoutChangingAnything` |
 | A reminder landing in the night hours warns and offers tomorrow | `Night`, `MainActivity.warnIfNight` | `AppControllerTest.theNightWarningOnlyFiresWhenTheAlertLandsInTheNightHours` |
 | The night window is local clock time, not UTC | `Night.isNight` | `LocalTimeTest.theNightWindowFollowsTheLocalClockAcrossTheSpringForward` |
+| Night hours can be changed from settings, both to a window that crosses midnight | `Settings.changed`, `SettingsActivity.editNightHours` | `SettingsTest.theNightHoursTheSettingsScreenWritesAreAccepted`, `SettingsTest.nightHoursWrittenAsBareMinutesStillReplay`, `AppControllerTest.theNightWindowFromTheSettingsScreenIsTheOneTheWarningUses`, `SettingsAndHistoryTest.theNightHoursRowShowsTheWindowThePickIsStoredAs` |
 | The front shows last, next, the band, and links | `MainActivity.render` | `MainActivityTest.theFrontScreenFollowsTheLog` |
 | The band is the last 24 hours, ending now | `TimelineBuilder.build` | `TimelineTest.theWindowIsTheLastTwentyFourHoursEndingNow` |
 | The band replaces the Today list | `activity_main.xml`, `TimelineView` | `MainActivityTest.aFreshInstallShowsTheTwoButtonsAndSaysNothingElse` |
 | Meals are filled dots, snacks hollow, times printed | `TimelineView.onDraw`, `TimelineView.drawTimes` | `MainActivityTest.theFrontScreenFollowsTheLog`, `ScreenshotTest.theFrontWithADayOnTheBand` |
-| Night hours are shaded from the setting | `TimelineBuilder.nights` | `TimelineTest.theNightHoursAreClippedToTheWindow`, `TimelineTest.theNightHoursFollowTheSetting` |
+| Night hours are shaded from the setting, including a window that crosses midnight | `TimelineBuilder.nights` | `TimelineTest.theNightHoursAreClippedToTheWindow`, `TimelineTest.theNightHoursFollowTheSetting`, `TimelineTest.aNightWindowThatCrossesMidnightIsOneStretch` |
 | Midnight is a line inside the band, never its edge | `TimelineBuilder.midnights` | `TimelineTest.midnightIsMarkedInsideTheWindowNotAtItsEdge` |
 | Hour labels follow the phone's clock across a DST change | `TimelineBuilder.hourMarks` | `TimelineTest.springForwardKeepsTheLabelsOnTheClock`, `TimelineTest.fallBackKeepsTheLabelsOnTheClock` |
 | Nothing on the band is a judgement | `Text`, `TimelineView` | `TextTest.noBannedWordEverReachesTheScreen`, `tools/wording.py` |

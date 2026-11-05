@@ -126,7 +126,8 @@ class SettingsActivity : AppCompatActivity() {
                     { _, endHour, endMinute ->
                         val start = startHour * 60 + startMinute
                         val end = endHour * 60 + endMinute
-                        controller.changeSetting(Settings.KEY_NIGHT, "$start-$end")
+                        // Clock shape, not raw minutes: the log is read by a person too.
+                        controller.changeSetting(Settings.KEY_NIGHT, clockOf(start) + "-" + clockOf(end))
                         render()
                     },
                     settings.nightEndMinute / 60,

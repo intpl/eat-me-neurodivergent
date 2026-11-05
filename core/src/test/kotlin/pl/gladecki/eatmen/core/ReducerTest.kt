@@ -78,7 +78,7 @@ class ReducerTest {
         val store = MutableLog()
         Actions.tomorrow(ids, now, settings).forEach(store::write)
         assertEquals(
-            Plan.TomorrowSilent(now + 8 * HOUR_MS, now + 12 * HOUR_MS),
+            Plan.TomorrowSilent(now + 12 * HOUR_MS, now + 16 * HOUR_MS),
             Reducer.reduce(store.lines).plan,
         )
     }
@@ -87,8 +87,8 @@ class ReducerTest {
     fun theSilentStepHandsOverToTheAudibleOne() {
         val store = MutableLog()
         Actions.tomorrow(ids, now, settings).forEach(store::write)
-        Actions.fire(ids, now + 8 * HOUR_MS, AlertKind.SILENT).forEach(store::write)
-        assertEquals(Plan.TomorrowDue(now + 12 * HOUR_MS), Reducer.reduce(store.lines).plan)
+        Actions.fire(ids, now + 12 * HOUR_MS, AlertKind.SILENT).forEach(store::write)
+        assertEquals(Plan.TomorrowDue(now + 16 * HOUR_MS), Reducer.reduce(store.lines).plan)
     }
 
     @Test

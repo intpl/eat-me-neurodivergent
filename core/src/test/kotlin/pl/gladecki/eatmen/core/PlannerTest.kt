@@ -30,7 +30,7 @@ class PlannerTest {
     @Test
     fun tomorrowIsADurationAndNotAClockTime() {
         val (silenceUntil, normalAt) = Planner.tomorrowSilence(now, settings)
-        assertEquals(now + 8 * HOUR_MS, silenceUntil)
+        assertEquals(now + 12 * HOUR_MS, silenceUntil)
         assertEquals(silenceUntil + 4 * HOUR_MS, normalAt)
     }
 

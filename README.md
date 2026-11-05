@@ -4,10 +4,11 @@ A timing-only meal reminder for Android. It never asks what you ate, only when.
 Package `pl.gladecki.eatmen`, minSdk 26 (Android 8.0), targetSdk 35, Kotlin, Gradle,
 plain Views, no Compose, no dependencies beyond AndroidX and Material Components.
 
-This is v3.1.0, built from the project note in the vault
+This is v3.2.0, built from the project note in the vault
 (`Projects/Eat-Me-Neurodivergent.md`); the change lists are in
-`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md` and `Release-3.1.0.md`. v1 used a
-different brief and is archived at `/home/b/dev/old/eat-me-neurodivergent-v1`.
+`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`, `Release-3.1.0.md` and
+`Release-3.2.0.md`. v1 used a different brief and is archived at
+`/home/b/dev/old/eat-me-neurodivergent-v1`.
 
 ## What it does
 
@@ -25,8 +26,9 @@ repeat. The first alert of a run makes the bundled sound and vibrates; every rep
 it appears without a sound, every ten minutes, until a meal is logged or tomorrow is set.
 The alert carries **Ate** and **Not now**.
 
-**Tomorrow** is a duration, not a clock time: eight silent hours, then one silent
-notification, then the first audible alert one meal gap later.
+**Tomorrow** is a duration, not a clock time: twelve silent hours, then one silent
+notification, then the first audible alert one meal gap later (sixteen hours after the
+tap with the default four-hour meal gap).
 
 Under the buttons, one strip draws the last 24 hours: meals as filled dots, snacks as
 small hollow ones, the times printed above them, the night hours shaded, midnight a line
