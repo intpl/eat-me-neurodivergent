@@ -1,0 +1,20 @@
+[
+ {
+  "shape": "Marquee Hero",
+  "theme": "Garden",
+  "axes": "light/grotesk-sans/chromatic-orange",
+  "hero": "Stage",
+  "nav": "masthead",
+  "footer": "colophon block",
+  "imagery": "screenshots 4 + band detail (Robolectric renders of 3.4.0)",
+  "photos": [],
+  "entry": "eat-me-neurodivergent landing",
+  "fingerprint": "Left-margin|Asymmetric spans|Hairline|Solid|Margin-aligned|None",
+  "sections": "Hero, The last 24 hours, Two buttons, Privacy, Words it never uses, Install, Questions, Get 3.4.0",
+  "signature": "the 24-hour band at true size, floating on the app paper",
+  "waived": "49b",
+  "prompt": "landing page for Eat Me, Neurodivergent! with real screenshots, download slots and a GitHub link",
+  "date": "2026-11-05",
+  "mode": "build"
+ }
+]

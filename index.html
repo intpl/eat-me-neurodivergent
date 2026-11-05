@@ -1,0 +1,243 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eat Me, Neurodivergent! A meal reminder for Android</title>
+<meta name="description" content="A timing-only meal reminder for Android. Two buttons, one notification, no calories, no streaks. APK for Android 8.0 and newer.">
+<meta name="theme-color" content="#FFFBF5">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<meta property="og:title" content="Eat Me, Neurodivergent!">
+<meta property="og:description" content="A meal reminder for Android that asks when, never what.">
+<meta property="og:type" content="website">
+<meta property="og:image" content="assets/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+</head>
+<body>
+
+<header class="masthead">
+  <div class="container masthead__inner">
+    <nav class="masthead__nav" aria-label="Sections">
+      <a href="#day">The day</a>
+      <a href="#app">Two buttons</a>
+    </nav>
+    <a class="wordmark" href="#top" aria-label="Eat Me, Neurodivergent!, back to top">
+      <img src="assets/mark.png" alt="" width="26" height="26">
+      <span>Eat Me, Neurodivergent!</span>
+    </a>
+    <nav class="masthead__nav masthead__nav--end" aria-label="Install">
+      <a href="#install">Install</a>
+      <a href="https://github.com/intpl/eat-me-neurodivergent">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <h1 id="hero-title">When did I last eat?</h1>
+        <p class="lead">A meal reminder for Android that asks when, never what.</p>
+        <a class="btn" href="download/eat-me-neurodivergent-3.4.0.apk" download>Download the APK</a>
+        <p class="note">4.9 MB, Android 8.0+.</p>
+      </div>
+      <figure class="hero__screen">
+        <img src="assets/screen-front.png" width="1080" height="1842" fetchpriority="high"
+             alt="The app’s front screen: last meal at 07:23, snack, four hours ago; next reminder at 11:24, in one minute; the two buttons I ate and I will eat; the last 24 hours with a meal at 16:23, snacks at 22:23 and 07:23, the night shaded and the current time at the right edge.">
+      </figure>
+    </div>
+  </section>
+
+
+  <section class="section" id="day" aria-labelledby="day-title">
+    <div class="container">
+      <div class="head-block">
+        <h2 id="day-title">The day, in one strip</h2>
+        <p class="lead">A rolling day ending now, so a meal either side of midnight is one strip.</p>
+      </div>
+      <figure class="band">
+        <img src="assets/band.png" width="932" height="272" loading="lazy"
+             alt="The band: a meal at 16:23 as a filled dot, snacks at 22:23 and 07:23 as hollow rings, the night shaded between 23:00 and 07:00, hours labelled below, and 11:23 at the right edge.">
+        <figcaption class="band-note">Nothing on it is tappable. Nothing is counted.</figcaption>
+      </figure>
+      <dl class="legend">
+        <div>
+          <dt>Meal</dt>
+          <dd>A filled dot, its time above it.</dd>
+        </div>
+        <div>
+          <dt>Snack</dt>
+          <dd>A smaller hollow ring.</dd>
+        </div>
+        <div>
+          <dt>Night</dt>
+          <dd>The night hours, shaded.</dd>
+        </div>
+      </dl>
+    </div>
+  </section>
+
+  <section class="section" id="app" aria-labelledby="app-title">
+    <div class="container split">
+      <div class="split__text">
+        <h2 id="app-title">Two buttons, three taps</h2>
+        <p class="lead">The button, a time, then the word meal or snack.</p>
+        <dl class="rows">
+          <div class="row">
+            <dt>I ate</dt>
+            <dd>Now, or up to five hours back. Meal sets the next reminder four hours out, a snack two.</dd>
+          </div>
+          <div class="row">
+            <dt>I will eat</dt>
+            <dd>Thirty minutes to four hours, or tomorrow. It logs nothing.</dd>
+          </div>
+          <div class="row">
+            <dt>Not now, on the notification</dt>
+            <dd>Ten minutes later, silently, as long as it takes.</dd>
+          </div>
+        </dl>
+      </div>
+      <figure class="split__screen">
+        <img src="assets/screen-empty.png" width="1080" height="1797" loading="lazy"
+             alt="A fresh install: nothing logged, no reminder, the two buttons, and a band with the night shaded and no meals on it.">
+      </figure>
+    </div>
+  </section>
+
+  <section class="section" id="privacy" aria-labelledby="privacy-title">
+    <div class="container split split--text-first">
+      <div class="split__text">
+        <h2 id="privacy-title">Nothing leaves the phone</h2>
+        <p class="lead">No account, no network, and no INTERNET permission to send anything with.</p>
+        <dl class="rows">
+        <div class="row">
+          <dt>One file</dt>
+          <dd>Every action is appended to one file and replayed at launch. Edits and deletions are new lines.</dd>
+        </div>
+        <div class="row">
+          <dt>Copy JSON</dt>
+          <dd>The whole log, one document, on the clipboard.</dd>
+        </div>
+        <div class="row">
+          <dt>Erase everything</dt>
+          <dd>Deletes the file, and the history with it.</dd>
+        </div>
+        </dl>
+      </div>
+      <figure class="split__screen">
+        <img src="assets/screen-settings.png" width="1080" height="2000" loading="lazy"
+             alt="The settings screen: meal gap 4h, snack gap 2h, tomorrow silence 12h, Not now 10m, night hours 23:00 to 07:00, sound and vibration, send a test notification, copy JSON and erase everything.">
+        <figcaption>Settings, all of it on the phone.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="never" aria-labelledby="never-title">
+    <div class="container">
+      <div class="plate">
+        <h2 id="never-title">Words it never uses</h2>
+        <p class="plate__words">missed, skipped, overdue, late, failed, streak, cheat, should, need to, don’t forget</p>
+        <p class="plate__line">Timing only. No calories, no nutrition, no scores.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="install" aria-labelledby="install-title">
+    <div class="container split split--text-first">
+      <div class="split__text">
+        <h2 id="install-title">Four switches, or nothing opens</h2>
+        <dl class="rows">
+          <div class="row">
+            <dt>Install it</dt>
+            <dd>Allow this source once.</dd>
+          </div>
+          <div class="row">
+            <dt>Walk the gate</dt>
+            <dd>Notifications, exact alarms, do-not-disturb, battery. Each opens the phone’s page.</dd>
+          </div>
+          <div class="row">
+            <dt>Log one meal</dt>
+            <dd>A time up to five hours back, then meal or snack.</dd>
+          </div>
+        </dl>
+      </div>
+      <figure class="split__screen">
+        <img src="assets/screen-gate.png" width="1080" height="1255" loading="lazy"
+             alt="The gate: a row for each missing switch, notifications, exact reminders, do-not-disturb access and battery use, each with allow at the right, and Check again.">
+      </figure>
+    </div>
+  </section>
+
+  <section class="section section--band" id="questions" aria-labelledby="questions-title">
+    <div class="container">
+      <div class="head-block">
+        <h2 id="questions-title">Before you install</h2>
+      </div>
+      <div class="faq">
+        <div class="faq__row">
+          <h3>Does it count calories?</h3>
+          <p>No. A time, and the word meal or snack.</p>
+        </div>
+        <div class="faq__row">
+          <h3>Why four switches?</h3>
+          <p>With one missing the app does not open.</p>
+        </div>
+        <div class="faq__row">
+          <h3>What does Tomorrow do?</h3>
+          <p>Twelve silent hours, one silent notification, then the first alert a meal gap later.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section--tight" id="get" aria-labelledby="get-title">
+    <div class="container get">
+      <div class="head-block">
+        <h2 id="get-title">Get 3.4.0</h2>
+        <p class="lead">One APK today. The store listings are not up yet.</p>
+      </div>
+      <ul class="get__rows">
+        <li>
+          <span class="get__name">Direct APK</span>
+          <span class="get__note">4.9 MB, signed with the release key</span>
+          <a class="btn" href="download/eat-me-neurodivergent-3.4.0.apk" download>Download the APK</a>
+        </li>
+        <li>
+          <span class="get__name">F-Droid</span>
+          <span class="get__note">not listed yet</span>
+        </li>
+        <li>
+          <span class="get__name">Google Play</span>
+          <span class="get__note">not listed yet</span>
+        </li>
+      </ul>
+      <p class="hash">SHA-256 <a href="download/eat-me-neurodivergent-3.4.0.apk.sha256" aria-label="Download the SHA-256 checksum file"><code>683f22c48fa8ebb08dd0bdee409f4dbfd9645c36ab309d8679024fb64d4fd3c9</code></a></p>
+    </div>
+  </section>
+
+</main>
+
+<footer class="colophon">
+  <div class="container">
+    <div class="colophon__top">
+      <a class="wordmark" href="#top">
+        <img src="assets/mark.png" alt="" width="24" height="24">
+        <span>Eat Me, Neurodivergent!</span>
+      </a>
+      <nav aria-label="Footer">
+        <a href="https://github.com/intpl/eat-me-neurodivergent">GitHub</a>
+        <a href="#get">Download</a>
+        <a href="#install">Install</a>
+      </nav>
+    </div>
+    <p class="colophon__text">Screens are renders from the app’s own test suite, not photographs of a phone. One typeface, no scripts, no analytics, and nothing from another domain.</p>
+  </div>
+</footer>
+
+</body>
+</html>
