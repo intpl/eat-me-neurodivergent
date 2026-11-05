@@ -9,6 +9,7 @@ import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -25,6 +26,9 @@ class SettingsAndHistoryTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val controller: AppController get() = EatMeApp.controller(context)
+
+    @Before
+    fun phoneAllowsEverything() = grantEverything(context)
 
     private fun dialog() = org.robolectric.shadows.ShadowDialog.getLatestDialog()
 
@@ -68,23 +72,15 @@ class SettingsAndHistoryTest {
     }
 
     @Test
-    fun theSettingsScreenOffersTheNotificationSwitchesWhenTheyAreOff() {
-        val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
-        val rows = settingsRows(activity).map { it.first }
-        assertTrue(rows.contains("Allow notifications") || rows.contains("Allow exact reminders"))
-    }
-
-    @Test
-    fun theTestRowSaysSoWhenTheAppCannotNotify() {
+    fun theSettingsScreenIsBehindTheGateLikeEverythingElse() {
         org.robolectric.Shadows.shadowOf(context.getSystemService(NotificationManager::class.java))
-            .setNotificationsEnabled(false)
+            .setNotificationPolicyAccessGranted(false)
         val activity = Robolectric.buildActivity(SettingsActivity::class.java).setup().get()
-        val row = settingsRows(activity).first { it.first == "Send a test notification" }.second
-        row.performClick()
         assertEquals(
-            "notifications are off for this app",
-            org.robolectric.shadows.ShadowToast.getTextOfLatestToast(),
+            AccessActivity::class.java.name,
+            org.robolectric.Shadows.shadowOf(activity).nextStartedActivity.component?.className,
         )
+        assertTrue(activity.isFinishing)
     }
 
     @Test

@@ -4,10 +4,10 @@ A timing-only meal reminder for Android. It never asks what you ate, only when.
 Package `pl.gladecki.eatmen`, minSdk 26 (Android 8.0), targetSdk 35, Kotlin, Gradle,
 plain Views, no Compose, no dependencies beyond AndroidX and Material Components.
 
-This is v3.2.0, built from the project note in the vault
+This is v3.3.0, built from the project note in the vault
 (`Projects/Eat-Me-Neurodivergent.md`); the change lists are in
-`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`, `Release-3.1.0.md` and
-`Release-3.2.0.md`. v1 used a different brief and is archived at
+`Projects/Eat-Me-Neurodivergent/Release-3.0.0.md`, `Release-3.1.0.md`,
+`Release-3.2.0.md` and `Release-3.3.0.md`. v1 used a different brief and is archived at
 `/home/b/dev/old/eat-me-neurodivergent-v1`.
 
 ## What it does
@@ -36,11 +36,12 @@ wherever it falls, and the right edge is now. It replaces the old Today list, so
 that crossed midnight is one continuous picture instead of two halves. Nothing on it is
 tappable and nothing is counted.
 
-The app also says what it cannot do. When notifications are off for it, or the phone
-withholds exact alarms, the front screen carries one flat line about it and a tap opens
-the system page for that switch. Settings has the same rows, a battery row, and **Send a
-test notification**: a real reminder-shaped notification, so the permission, the channel
-and the sound can be checked in two seconds instead of a week.
+**The app does not open without three things.** Until the phone allows notifications,
+exact reminders and do-not-disturb access, every screen is replaced by one gate: the
+switches it is missing, each opening the phone's own page, and `Check again`. Nothing is
+logged and nothing is planned until all three are on. Settings keeps a battery row and
+**Send a test notification**: a real reminder-shaped notification, so the permission, the
+channel and the sound can be checked in two seconds instead of a week.
 
 A reminder speaks once, at the time it was set for. There is no earlier heads-up.
 
@@ -119,20 +120,20 @@ created.
 ## Known limits
 
 - **Do-not-disturb.** The app reads the interruption filter (needs the policy access the
-  settings row asks for) and posts on a silent channel while DND is on. Android does not
+  gate asks for) and posts on a silent channel while DND is on. Android does not
   let an app force its notifications through DND on its own: the phone also has to allow
   this app under *Do Not Disturb → Apps*. Without that, DND wins, which is the lesser lie.
 - **Exact alarms.** Android 14 and newer do not grant `SCHEDULE_EXACT_ALARM` to a new
   install by default. With it granted the reminder is exact; without it the app uses
-  `setAndAllowWhileIdle`, which can be minutes or more off in deep doze, and the front
-  screen says so until the switch is flipped.
+  `setAndAllowWhileIdle`, which can be minutes or more off in deep doze. The app refuses
+  to open until the switch is flipped.
 - **Battery.** An OEM that sleeps the app (Samsung's sleeping apps, Xiaomi's manager)
   cancels its alarms and can drop its ongoing notification. Settings offers the phone's
   battery page; the app cannot exempt itself without a permission this build refuses.
 - **Never installed on hardware.** Everything green above is verification, not validation.
   The real test is a week of use.
-- Notification permission denied means no reminders, though logging and export still work.
-  The front screen states it and the settings screen can send a test to prove it.
+- Without all three accesses the app does not open at all: the gate names what the phone
+  withholds and opens the phone's page for it.
 
 ## Layout
 

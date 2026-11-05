@@ -20,9 +20,10 @@ named here is executed.
 | Only the first alert of a run makes a sound | `NotificationCenter.showAlert` channel choice | `AppControllerTest.theDueAlarmIsTheOnlyAudibleOneOfARun` |
 | The voice is flat | `Text` | `TextTest.noBannedWordEverReachesTheScreen`, `tools/wording.py` |
 | A reminder speaks at the time it was set for, and not before | `Reducer.planForSet`, `Planner.overdueStep` | `AppControllerTest.anExplicitReminderSpeaksAtItsOwnTimeAndNotBefore`, `PlannerTest.nothingIsDueBeforeTheRemindersOwnInstant` |
-| The front says when the app cannot notify | `MainActivity.renderProblems` | `MainActivityTest.theFrontSaysWhenNotificationsAreOff` |
-| The front says when exact reminders are withheld | `MainActivity.renderProblems` | `MainActivityTest.theFrontSaysWhenExactRemindersAreWithheld` |
-| A test notification proves the permission, the channel and the sound | `NotificationCenter.test`, `SettingsActivity.sendTestNotification` | `NotificationCenterTest.theTestNotificationLooksLikeAReminderAndUsesItsChannel`, `SettingsAndHistoryTest.theTestRowSaysSoWhenTheAppCannotNotify` |
+| The app does not open without notifications, exact reminders and do-not-disturb access | `GatedActivity.gated`, `Accesses.missing` | `MainActivityTest.theFrontDoesNotOpenWithoutDoNotDisturbAccess`, `SettingsAndHistoryTest.theSettingsScreenIsBehindTheGateLikeEverythingElse` |
+| The gate names each withheld switch and opens the phone's page for it | `AccessActivity`, `Accesses.settingsIntent` | `AccessTest.theGateNamesEveryWithheldSwitch`, `AccessTest.eachRowOpensThePhonesOwnPage` |
+| The gate drops what the phone allows, and opens the app when nothing is withheld | `AccessActivity.check` | `AccessTest.theGateDropsTheSwitchesThePhoneAllows`, `AccessTest.theGateLetsTheAppThroughWhenNothingIsWithheld`, `MainActivityTest.theFrontOpensWhenThePhoneAllowsEverything` |
+| A test notification proves the permission, the channel and the sound | `NotificationCenter.test`, `SettingsActivity.sendTestNotification` | `NotificationCenterTest.theTestNotificationLooksLikeAReminderAndUsesItsChannel` |
 | A log written before 3.1.0 still replays its warning step | `Reducer.planAfterAlert` | `ReducerTest.aWarningFromAnOlderLogReplaysWithoutChangingAnything` |
 | A reminder landing in the night hours warns and offers tomorrow | `Night`, `MainActivity.warnIfNight` | `AppControllerTest.theNightWarningOnlyFiresWhenTheAlertLandsInTheNightHours` |
 | The night window is local clock time, not UTC | `Night.isNight` | `LocalTimeTest.theNightWindowFollowsTheLocalClockAcrossTheSpringForward` |

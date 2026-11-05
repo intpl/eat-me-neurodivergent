@@ -1,6 +1,19 @@
 package pl.gladecki.eatmen
 
+import android.app.NotificationManager
+import android.content.Context
+import org.robolectric.Shadows.shadowOf
+import org.robolectric.shadows.ShadowAlarmManager
 import pl.gladecki.eatmen.core.State
+
+/** The phone a set-up install runs on: every switch the gate asks for is on. */
+fun grantEverything(context: Context) {
+    shadowOf(context.getSystemService(NotificationManager::class.java)).apply {
+        setNotificationsEnabled(true)
+        setNotificationPolicyAccessGranted(true)
+    }
+    ShadowAlarmManager.setCanScheduleExactAlarms(true)
+}
 
 class FakeClock(var wall: Long = BASE, var elapsedMs: Long = 1_000) : Clock {
     override fun now(): Long = wall

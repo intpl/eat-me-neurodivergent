@@ -1,19 +1,16 @@
 package pl.gladecki.eatmen
 
-import android.app.NotificationManager
 import android.app.TimePickerDialog
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import android.os.PowerManager
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.materialswitch.MaterialSwitch
 import pl.gladecki.eatmen.core.HOUR_MS
@@ -23,7 +20,7 @@ import pl.gladecki.eatmen.databinding.ActivitySettingsBinding
 import pl.gladecki.eatmen.ui.showHoursDialog
 import pl.gladecki.eatmen.ui.showOptionsSheet
 
-class SettingsActivity : AppCompatActivity() {
+class SettingsActivity : GatedActivity() {
 
     private lateinit var binding: ActivitySettingsBinding
 
@@ -41,6 +38,7 @@ class SettingsActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (gated()) return
         render()
     }
 
@@ -70,17 +68,6 @@ class SettingsActivity : AppCompatActivity() {
         addSwitch(list, getString(R.string.settings_vibration), settings.vibration) { checked ->
             controller.changeSetting(Settings.KEY_VIBRATION, checked.toString())
             render()
-        }
-        if (!controller.notificationsEnabled()) {
-            addRow(list, getString(R.string.settings_notifications), "") { openNotificationSettings() }
-        }
-        if (!notificationPolicyGranted()) {
-            addRow(list, getString(R.string.settings_dnd), "") {
-                startActivity(Intent(android.provider.Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS))
-            }
-        }
-        if (!exactAlarmsAllowed()) {
-            addRow(list, getString(R.string.settings_exact_alarms), "") { openExactAlarmSettings() }
         }
         if (!batteryUnrestricted()) {
             addRow(list, getString(R.string.settings_battery), "") { openBatterySettings() }
@@ -168,17 +155,6 @@ class SettingsActivity : AppCompatActivity() {
             .show()
     }
 
-    private fun exactAlarmsAllowed(): Boolean =
-        Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
-            getSystemService(android.app.AlarmManager::class.java).canScheduleExactAlarms()
-
-    private fun openNotificationSettings() {
-        startActivity(
-            Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                .putExtra(android.provider.Settings.EXTRA_APP_PACKAGE, packageName),
-        )
-    }
-
     /** The phone's own battery page: no permission is needed to open it, only to ask for the exemption. */
     private fun batteryUnrestricted(): Boolean = try {
         getSystemService(PowerManager::class.java).isIgnoringBatteryOptimizations(packageName)
@@ -196,25 +172,10 @@ class SettingsActivity : AppCompatActivity() {
      */
     private fun sendTestNotification() {
         if (!controller.notificationsEnabled()) {
-            Toast.makeText(this, R.string.problem_notifications, Toast.LENGTH_LONG).show()
+            Toast.makeText(this, R.string.access_notifications, Toast.LENGTH_LONG).show()
             return
         }
         controller.sendTestNotification()
-    }
-
-    private fun openExactAlarmSettings() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return
-        startActivity(
-            Intent(
-                android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM,
-                android.net.Uri.parse("package:$packageName"),
-            ),
-        )
-    }
-
-    private fun notificationPolicyGranted(): Boolean {
-        val manager = getSystemService(NotificationManager::class.java)
-        return manager.isNotificationPolicyAccessGranted
     }
 
     private fun soundName(id: String): String =

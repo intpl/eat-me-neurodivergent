@@ -1,17 +1,8 @@
 package pl.gladecki.eatmen
 
-import android.Manifest
-import android.app.AlarmManager
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
-import android.os.Build
 import android.os.Bundle
-import android.provider.Settings
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import pl.gladecki.eatmen.core.Kind
 import pl.gladecki.eatmen.core.MINUTE_MS
@@ -22,14 +13,12 @@ import pl.gladecki.eatmen.ui.showOptionsSheet
 
 /**
  * Two actions, one notification, one screen. Everything else is a short list of
- * words on a sheet.
+ * words on a sheet. Nothing here is reachable until the phone allows the three
+ * accesses the gate asks for.
  */
-class MainActivity : AppCompatActivity() {
+class MainActivity : GatedActivity() {
 
     private lateinit var binding: ActivityMainBinding
-
-    private var askedAtLaunch = false
-    private var askedAfterAction = false
 
     private val controller: AppController get() = EatMeApp.controller(this)
 
@@ -50,22 +39,14 @@ class MainActivity : AppCompatActivity() {
         }
 
         controller.noteAppOpened()
+        if (gated()) return
         handleAction(intent)
     }
 
     override fun onResume() {
         super.onResume()
-        askNotifications(atLaunch = true)
+        if (gated()) return
         render()
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == REQUEST_NOTIFICATIONS) render()
     }
 
     override fun onNewIntent(intent: Intent) {
@@ -95,29 +76,6 @@ class MainActivity : AppCompatActivity() {
         binding.textStale.visibility = if (stale == null) View.GONE else View.VISIBLE
 
         binding.timeline.show(controller.timeline(now), zone)
-        renderProblems()
-    }
-
-    /**
-     * A screen that cannot speak has to say so. Both lines are facts, not
-     * requests: the tap opens the phone's page for the thing that is off.
-     */
-    private fun renderProblems() {
-        val list = binding.listProblems
-        list.removeAllViews()
-        if (!controller.notificationsEnabled()) {
-            addProblem(list, R.string.problem_notifications) { openNotificationSettings() }
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S && !canScheduleExactAlarms()) {
-            addProblem(list, R.string.problem_exact_alarms) { openExactAlarmSettings() }
-        }
-    }
-
-    private fun addProblem(list: LinearLayout, text: Int, onClick: () -> Unit) {
-        val row = layoutInflater.inflate(R.layout.row_problem, list, false)
-        row.findViewById<TextView>(R.id.problemText).text = getString(text)
-        row.setOnClickListener { onClick() }
-        list.addView(row)
     }
 
     private fun askWhenLogging() {
@@ -133,7 +91,6 @@ class MainActivity : AppCompatActivity() {
             listOf(getString(R.string.opt_meal), getString(R.string.opt_snack)),
         ) { index ->
             controller.logMeal(eatenAt, if (index == 0) Kind.MEAL else Kind.SNACK)
-            askNotifications(atLaunch = false)
             render()
             warnIfNight()
         }
@@ -147,7 +104,6 @@ class MainActivity : AppCompatActivity() {
             } else {
                 controller.planAhead(System.currentTimeMillis() + SheetOptions.aheadMinutes[index] * MINUTE_MS)
             }
-            askNotifications(atLaunch = false)
             render()
             warnIfNight()
         }
@@ -166,44 +122,8 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
 
-    /**
-     * Asked once when the app opens, and once more the first time it actually has
-     * something to say. A refusal is never argued with beyond that: the front
-     * screen keeps stating the fact instead.
-     */
-    private fun askNotifications(atLaunch: Boolean) {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
-        if (checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) return
-        if (atLaunch) {
-            if (askedAtLaunch) return
-            askedAtLaunch = true
-        } else {
-            if (askedAfterAction) return
-            askedAfterAction = true
-            if (!shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) return
-        }
-        requestPermissions(arrayOf(Manifest.permission.POST_NOTIFICATIONS), REQUEST_NOTIFICATIONS)
-    }
-
-    private fun openNotificationSettings() {
-        startActivity(
-            Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS)
-                .putExtra(Settings.EXTRA_APP_PACKAGE, packageName),
-        )
-    }
-
-    private fun canScheduleExactAlarms(): Boolean =
-        getSystemService(AlarmManager::class.java).canScheduleExactAlarms()
-
-    private fun openExactAlarmSettings() {
-        startActivity(
-            Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, Uri.parse("package:$packageName")),
-        )
-    }
-
     companion object {
         const val EXTRA_ACTION = "pl.gladecki.eatmen.ACTION"
         const val ACTION_ATE = "ate"
-        private const val REQUEST_NOTIFICATIONS = 1
     }
 }

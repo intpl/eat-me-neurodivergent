@@ -84,13 +84,6 @@
             tools:text="😕 9 hours since your last meal"
             xmlns:tools="http://schemas.android.com/tools" />
 
-        <LinearLayout
-            android:id="@+id/listProblems"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="vertical" />
-
         <com.google.android.material.button.MaterialButton
             android:id="@+id/buttonAte"
             android:layout_width="match_parent"

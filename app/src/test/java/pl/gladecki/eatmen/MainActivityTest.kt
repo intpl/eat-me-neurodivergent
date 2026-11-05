@@ -7,9 +7,11 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.test.core.app.ApplicationProvider
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Assert.assertNotNull
 import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
+import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -29,6 +31,9 @@ class MainActivityTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
     private val controller: AppController get() = EatMeApp.controller(context)
+
+    @Before
+    fun phoneAllowsEverything() = grantEverything(context)
 
     private fun launch(): MainActivity {
         val activity = Robolectric.buildActivity(MainActivity::class.java).setup().get()
@@ -60,34 +65,23 @@ class MainActivityTest {
         assertEquals(0, controller.state.meals.size)
     }
 
-    private fun problemLines(binding: ActivityMainBinding): List<String> =
-        (0 until binding.listProblems.childCount).map { index ->
-            binding.listProblems.getChildAt(index)
-                .findViewById<TextView>(R.id.problemText).text.toString()
-        }
-
     @Test
-    fun theFrontSaysWhenNotificationsAreOff() {
-        shadowOf(context.getSystemService(NotificationManager::class.java)).setNotificationsEnabled(false)
-        val lines = problemLines(bindingOf(launch()))
-        assertTrue(lines.any { it.startsWith("notifications are off") })
+    fun theFrontDoesNotOpenWithoutDoNotDisturbAccess() {
+        shadowOf(context.getSystemService(NotificationManager::class.java))
+            .setNotificationPolicyAccessGranted(false)
+        val activity = launch()
+        assertEquals(
+            AccessActivity::class.java.name,
+            shadowOf(activity).nextStartedActivity.component?.className,
+        )
+        assertTrue(activity.isFinishing)
     }
 
     @Test
-    fun theFrontSaysWhenExactRemindersAreWithheld() {
-        ShadowAlarmManager.setCanScheduleExactAlarms(false)
-        try {
-            val lines = problemLines(bindingOf(launch()))
-            assertTrue(lines.any { it.startsWith("exact reminders are off") })
-        } finally {
-            ShadowAlarmManager.setCanScheduleExactAlarms(true)
-        }
-    }
-
-    @Test
-    fun theFrontSaysNothingWhenNothingIsWithheld() {
-        ShadowAlarmManager.setCanScheduleExactAlarms(true)
-        assertEquals(0, bindingOf(launch()).listProblems.childCount)
+    fun theFrontOpensWhenThePhoneAllowsEverything() {
+        val activity = launch()
+        assertNull(shadowOf(activity).nextStartedActivity)
+        assertFalse(activity.isFinishing)
     }
 
     @Test

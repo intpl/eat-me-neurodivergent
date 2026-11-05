@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
-import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
@@ -18,7 +17,7 @@ import pl.gladecki.eatmen.ui.SheetOptions
 import pl.gladecki.eatmen.ui.showOptionsSheet
 
 /** Meals are editable for 24 hours. Everything older lives in the JSON export. */
-class EditHistoryActivity : AppCompatActivity() {
+class EditHistoryActivity : GatedActivity() {
 
     private lateinit var binding: ActivityEditHistoryBinding
     private val adapter = MealAdapter()
@@ -41,6 +40,7 @@ class EditHistoryActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        if (gated()) return
         render()
     }
 

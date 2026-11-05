@@ -33,7 +33,10 @@ abstract class ScreenshotBase {
         shadowOf(
             ApplicationProvider.getApplicationContext<android.app.Application>()
                 .getSystemService(NotificationManager::class.java),
-        ).setNotificationsEnabled(true)
+        ).apply {
+            setNotificationsEnabled(true)
+            setNotificationPolicyAccessGranted(true)
+        }
     }
 
     fun seed() {
@@ -106,14 +109,16 @@ class ScreenshotTest : ScreenshotBase() {
     }
 
     @Test
-    fun theFrontWhenThePhoneBlocksReminders() {
+    fun theGateWhenThePhoneWithholdsAccess() {
         shadowOf(
             ApplicationProvider.getApplicationContext<android.app.Application>()
                 .getSystemService(NotificationManager::class.java),
-        ).setNotificationsEnabled(false)
+        ).apply {
+            setNotificationsEnabled(false)
+            setNotificationPolicyAccessGranted(false)
+        }
         ShadowAlarmManager.setCanScheduleExactAlarms(false)
-        seed()
-        shot(Robolectric.buildActivity(MainActivity::class.java).setup().get(), "front-blocked")
+        shot(Robolectric.buildActivity(AccessActivity::class.java).setup().get(), "gate")
     }
 
     @Test
